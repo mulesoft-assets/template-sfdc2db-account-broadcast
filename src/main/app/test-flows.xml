@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <sub-flow name="insertUserSalesforceSubFlow" doc:name="insertUserSalesforceSubFlow">
+        <sfdc:upsert config-ref="SalesforceA" type="User" doc:name="Insert User" externalIdFieldName="Email">
+	        <sfdc:objects>
+	            <sfdc:object>
+	                <sfdc:inner-object key="LocaleSidKey">#[payload.LocaleSidKey]</sfdc:inner-object>
+	                <sfdc:inner-object key="LastName">#[payload.LastName]</sfdc:inner-object>
+	                <sfdc:inner-object key="LanguageLocaleKey">#[payload.LanguageLocaleKey]</sfdc:inner-object>
+	                <sfdc:inner-object key="Email">#[payload.Email]</sfdc:inner-object>
+	                <sfdc:inner-object key="FirstName">#[payload.FirstName]</sfdc:inner-object>
+	                <sfdc:inner-object key="TimeZoneSidKey">#[payload.TimeZoneSidKey]</sfdc:inner-object>
+	                <sfdc:inner-object key="CommunityNickname">#[payload.CommunityNickname]</sfdc:inner-object>
+	                <sfdc:inner-object key="ProfileId">#[payload.ProfileId]</sfdc:inner-object>
+	                <sfdc:inner-object key="EmailEncodingKey">#[payload.EmailEncodingKey]</sfdc:inner-object>
+	                <sfdc:inner-object key="Alias">#[payload.Alias]</sfdc:inner-object>
+	                <sfdc:inner-object key="Username">#[payload.Email]</sfdc:inner-object>
+	            </sfdc:object>
+	        </sfdc:objects>       
+        </sfdc:upsert>
+    </sub-flow>
+    <sub-flow name="deleteUserDB" doc:name="deleteUserDB">
+        <db:delete config-ref="GenericDatabaseConnector" doc:name="Database">
+            <db:dynamic-query><![CDATA[delete from "user" where email = '#[payload.email]']]></db:dynamic-query>
+        </db:delete>
+    </sub-flow>    
+    <sub-flow name="selectUserFromDB" doc:name="selectUserFromDB">
+        <db:select config-ref="GenericDatabaseConnector" doc:name="Database">
+            <db:template-query-ref name="QueryUserByEmail"/>
+            <db:in-param name="paramEmail" value="#[message.payload['Email']]"/>
+        </db:select>
+    </sub-flow>
+</mule>

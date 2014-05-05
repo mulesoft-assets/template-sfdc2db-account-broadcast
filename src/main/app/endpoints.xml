@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <flow name="triggerFlow" doc:name="triggerFlow" processingStrategy="synchronous" doc:description="This is the simpliest entry point to start the excecution of your Template
+Here you should: 
+	* Configure the inbound endpoint, in this case a polling to fetch data from origin system
+	* Handle any input parameter and set the scope of it so the main logic does not care from where it is called">
+        <poll doc:name="Salesforce for users">
+            <fixed-frequency-scheduler frequency="${poll.frequencyMillis}" startDelay="${poll.startDelayMillis}"/>
+            <watermark variable="lastQueryDate" default-expression="YESTERDAY" selector="MAX" selector-expression="#[payload.LastModifiedDate]"/>
+            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT Alias,Email,EmailEncodingKey,FirstName,LanguageLocaleKey,LastModifiedDate,LastName,LocaleSidKey,ProfileId,TimeZoneSidKey,Title,Username, Id FROM User WHERE (LastModifiedDate &gt; #[lastQueryDate] AND IsActive = true)" fetchSize="200" doc:name="Query Users with filtering criteria from SalesforceA"/>
+        </poll>
+        <logger message="lastQueryDate:  #[flowVars.'lastQueryDate']" level="INFO" doc:name="Log lastQueryDate"/>
+        <batch:execute name="syncUsersBatch" doc:name="Trigger Batch execute for Upsert in database"/>
+    </flow>
+</mule>

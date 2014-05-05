@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:context="http://www.springframework.org/schema/context" 
+xmlns="http://www.mulesoft.org/schema/mule/core" 
+xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+xmlns:spring="http://www.springframework.org/schema/beans" 
+xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+version="EE-3.5.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
+	
+	<!-- This is the main configuration files, you should place here all the Connectors configuration an declarations -->
+
+    <context:property-placeholder location="common.properties, mule.${mule.env}.properties"/>
+    
+    <sfdc:config name="SalesforceA" username="${sfdc.a.username}" password="${sfdc.a.password}" securityToken="${sfdc.a.securityToken}" url="${sfdc.a.url}" doc:name="Salesforce" doc:description="One of your SalesForce instances, from this is were changes are going to be synced.">
+        <sfdc:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
+    </sfdc:config>
+
+	<db:generic-config name="GenericDatabaseConnector"
+		url="${database.url}" driverClassName="org.postgresql.Driver"
+		doc:name="Generic Database Configuration"
+		doc:description="Include jar for your database and supply correct url pointing to your database eg: 
+jdbc:postgres://localhost:5432/database-name?user=user&amp;password=password" />
+
+    <db:template-query name="QueryUserByEmail" doc:name="Template Query">
+        <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from "user" where email = ?]]></db:parameterized-query>
+        <db:in-param name="paramEmail" defaultValue=" "/>
+    </db:template-query>
+    <db:template-query name="UpdateUser" doc:name="Template Query">
+        <db:parameterized-query><![CDATA[UPDATE "user" SET 
+firstname = ?, 
+lastname = ?, 
+salesforce_id = ?
+WHERE email = ?]]></db:parameterized-query>
+        <db:in-param name="firstname" defaultValue=" "/>
+        <db:in-param name="lastname" defaultValue=" "/>
+        <db:in-param name="salesforce_id" defaultValue=" "/>
+        <db:in-param name="email" defaultValue=" "/>
+    </db:template-query>
+    <db:template-query name="InsertUser" doc:name="Template Query">
+        <db:parameterized-query><![CDATA[INSERT INTO "user"(firstname, lastname, salesforce_id, email)
+VALUES (?, ?, ?, ?)]]></db:parameterized-query>
+        <db:in-param name="firstname" defaultValue=" "/>
+        <db:in-param name="lastname" defaultValue=" "/>
+        <db:in-param name="salesforce_id" defaultValue=" "/>
+        <db:in-param name="email" defaultValue=" "/>
+    </db:template-query>    
+</mule>

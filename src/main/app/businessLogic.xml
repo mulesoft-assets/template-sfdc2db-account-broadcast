@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
+    <batch:job name="syncUsersBatch">
+        <batch:threading-profile poolExhaustedAction="WAIT"/>
+        <batch:process-records>
+            <batch:step name="checkUserInDatabaseStep">
+                <enricher source="#[payload]" target="#[recordVars.user]" doc:name="Store payload into variable 'user'">
+                    <db:select config-ref="GenericDatabaseConnector" doc:name="query User by matching email from Database">
+                        <db:template-query-ref name="QueryUserByEmail"/>
+                        <db:in-param name="paramEmail" value="#[payload.Email]"/>
+                    </db:select>
+                </enricher>
+            </batch:step>
+            <batch:step name="updateUserInDatabaseStep" filter-expression="#[recordVars['user'].size() == 0]">
+                <batch:commit size="100" doc:name="Batch Commit">
+                    <db:update config-ref="GenericDatabaseConnector" doc:name="update user in database" bulkMode="true">
+                        <db:parameterized-query><![CDATA[UPDATE "user" SET 
+firstname = #[payload.FirstName], 
+lastname = #[payload.LastName], 
+salesforce_id = #[payload.Id]
+WHERE email = #[payload.Email]]]></db:parameterized-query>
+                    </db:update>
+                </batch:commit>
+            </batch:step>
+            <batch:step name="insertUserInDatabaseStep" filter-expression="#[recordVars['user'].size() &gt; 0]">
+                <batch:commit size="100" doc:name="Batch Commit">
+                    <db:insert config-ref="GenericDatabaseConnector" doc:name="insert user in database" bulkMode="true">
+                        <db:parameterized-query><![CDATA[INSERT INTO "user"(firstname, lastname, salesforce_id, email)
+VALUES (#[payload.FirstName], #[payload.LastName], #[payload.Id], #[payload.Email])]]></db:parameterized-query>
+                    </db:insert>
+                </batch:commit>
+            </batch:step>
+        </batch:process-records>
+        <batch:on-complete>
+            <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
+            <logger message="Migration process has finished: #[payload]" level="INFO" doc:name="log 'Migration process has finished'"/>
+        </batch:on-complete>
+    </batch:job>
+</mule>
