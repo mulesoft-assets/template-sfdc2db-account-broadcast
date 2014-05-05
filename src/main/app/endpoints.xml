@@ -10,12 +10,12 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 Here you should: 
 	* Configure the inbound endpoint, in this case a polling to fetch data from origin system
 	* Handle any input parameter and set the scope of it so the main logic does not care from where it is called">
-        <poll doc:name="Salesforce for users">
+        <poll doc:name="Salesforce for accounts">
             <fixed-frequency-scheduler frequency="${poll.frequencyMillis}" startDelay="${poll.startDelayMillis}"/>
             <watermark variable="lastQueryDate" default-expression="YESTERDAY" selector="MAX" selector-expression="#[payload.LastModifiedDate]"/>
-            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT Alias,Email,EmailEncodingKey,FirstName,LanguageLocaleKey,LastModifiedDate,LastName,LocaleSidKey,ProfileId,TimeZoneSidKey,Title,Username, Id FROM User WHERE (LastModifiedDate &gt; #[lastQueryDate] AND IsActive = true)" fetchSize="200" doc:name="Query Users with filtering criteria from SalesforceA"/>
+            <sfdc:query config-ref="SalesforceA" query="dsql:SELECT AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, LastModifiedDate, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website FROM Account WHERE LastModifiedDate &gt; #[lastQueryDate]" fetchSize="200" doc:name="Query Accounts with filtering criteria from SalesforceA"/>
         </poll>
         <logger message="lastQueryDate:  #[flowVars.'lastQueryDate']" level="INFO" doc:name="Log lastQueryDate"/>
-        <batch:execute name="syncUsersBatch" doc:name="Trigger Batch execute for Upsert in database"/>
+        <batch:execute name="syncAccountsBatch" doc:name="Trigger Batch execute for Upsert in database"/>
     </flow>
 </mule>

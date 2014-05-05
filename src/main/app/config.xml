@@ -23,32 +23,105 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     </sfdc:config>
 
 	<db:generic-config name="GenericDatabaseConnector"
-		url="${database.url}" driverClassName="org.postgresql.Driver"
+		url="${database.url}" driverClassName="com.mysql.jdbc.Driver"
 		doc:name="Generic Database Configuration"
-		doc:description="Include jar for your database and supply correct url pointing to your database eg: 
-jdbc:postgres://localhost:5432/database-name?user=user&amp;password=password" />
+		doc:description="Include jar for your database and supply correct url pointing to your database eg" />
 
-    <db:template-query name="QueryUserByEmail" doc:name="Template Query">
-        <db:parameterized-query><![CDATA[select firstname, lastname, id, email, salesforce_id from "user" where email = ?]]></db:parameterized-query>
-        <db:in-param name="paramEmail" defaultValue=" "/>
+    <db:template-query name="QueryAccountByName" doc:name="Template Query">
+        <db:parameterized-query><![CDATA[select AccountNumber, AnnualRevenue, AccountSource, Name, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, NumberOfEmployees, Phone, Rating, ShippingCity, ShippingCountry,
+         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId from Account where Name = ?]]></db:parameterized-query>
+        <db:in-param name="paramName" defaultValue=" "/>
     </db:template-query>
-    <db:template-query name="UpdateUser" doc:name="Template Query">
-        <db:parameterized-query><![CDATA[UPDATE "user" SET 
-firstname = ?, 
-lastname = ?, 
-salesforce_id = ?
-WHERE email = ?]]></db:parameterized-query>
-        <db:in-param name="firstname" defaultValue=" "/>
-        <db:in-param name="lastname" defaultValue=" "/>
-        <db:in-param name="salesforce_id" defaultValue=" "/>
-        <db:in-param name="email" defaultValue=" "/>
+        <db:template-query name="UpdateAccount" doc:name="Template Query">
+        <db:parameterized-query><![CDATA[UPDATE Account SET 
+accountNumber = ?, 
+annualRevenue = ?, 
+billingCity = ?,
+accountSource = ?,
+billingCountry = ?,
+billingPostalCode = ?,
+billingState = ?,
+billingStreet = ?,
+description = ?,
+fax = ?,
+industry = ?,
+numberOfEmployees = ?,
+phone = ?,
+rating = ?,
+shippingCity = ?,
+shippingCountry = ?,
+shippingPostalCode = ?,
+shippingState = ?,
+shippingStreet = ?,
+sic = ?,
+sicDesc = ?,
+site = ?,
+tickerSymbol = ?,
+type = ?,
+website = ?,
+ownerId = ?,
+parentId = ?
+WHERE name = ?]]></db:parameterized-query>
+        <db:in-param name="accountNumber" defaultValue=" "/>
+        <db:in-param name="annualRevenue" defaultValue=" "/>
+        <db:in-param name="billingCity" defaultValue=" "/>
+        <db:in-param name="accountSource" defaultValue=" "/>
+		<db:in-param name="billingCountry" defaultValue=" "/>
+		<db:in-param name="billingPostalCode" defaultValue=" "/>
+		<db:in-param name="billingState" defaultValue=" "/>
+		<db:in-param name="billingStreet" defaultValue=" "/>
+		<db:in-param name="description" defaultValue=" "/>
+		<db:in-param name="fax" defaultValue=" "/>
+		<db:in-param name="industry" defaultValue=" "/>
+		<db:in-param name="numberOfEmployees" defaultValue=" "/>
+		<db:in-param name="phone" defaultValue=" "/>
+		<db:in-param name="rating" defaultValue=" "/>
+		<db:in-param name="shippingCity" defaultValue=" "/>
+		<db:in-param name="shippingCountry" defaultValue=" "/>
+		<db:in-param name="shippingPostalCode" defaultValue=" "/>
+		<db:in-param name="shippingState" defaultValue=" "/>
+		<db:in-param name="shippingStreet" defaultValue=" "/>
+		<db:in-param name="sic" defaultValue=" "/>
+		<db:in-param name="sicDesc" defaultValue=" "/>
+		<db:in-param name="site" defaultValue=" "/>
+		<db:in-param name="tickerSymbol" defaultValue=" "/>
+		<db:in-param name="type" defaultValue=" "/>
+		<db:in-param name="website" defaultValue=" "/>
+		<db:in-param name="ownerId" defaultValue=" "/>
+		<db:in-param name="parentId" defaultValue=" "/>
+        <db:in-param name="name" defaultValue=" "/>
     </db:template-query>
-    <db:template-query name="InsertUser" doc:name="Template Query">
-        <db:parameterized-query><![CDATA[INSERT INTO "user"(firstname, lastname, salesforce_id, email)
-VALUES (?, ?, ?, ?)]]></db:parameterized-query>
-        <db:in-param name="firstname" defaultValue=" "/>
-        <db:in-param name="lastname" defaultValue=" "/>
-        <db:in-param name="salesforce_id" defaultValue=" "/>
-        <db:in-param name="email" defaultValue=" "/>
+    <db:template-query name="InsertAccount" doc:name="Template Query">
+        <db:parameterized-query><![CDATA[INSERT INTO Account (accountNumber, annualRevenue, billingCity, accountSource, billingCountry, billingPostalCode, billingState, billingStreet, description, fax, industry, numberOfEmployees, phone, rating, shippingCity, shippingCountry,
+         shippingPostalCode, shippingState, shippingStreet, sic, sicDesc, site, tickerSymbol, type, website, ownerId, parentId, name)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]]></db:parameterized-query>
+        <db:in-param name="accountNumber" defaultValue=" "/>
+        <db:in-param name="annualRevenue" defaultValue=" "/>
+        <db:in-param name="billingCity" defaultValue=" "/>
+        <db:in-param name="accountSource" defaultValue=" "/>
+		<db:in-param name="billingCountry" defaultValue=" "/>
+		<db:in-param name="billingPostalCode" defaultValue=" "/>
+		<db:in-param name="billingState" defaultValue=" "/>
+		<db:in-param name="billingStreet" defaultValue=" "/>
+		<db:in-param name="description" defaultValue=" "/>
+		<db:in-param name="fax" defaultValue=" "/>
+		<db:in-param name="industry" defaultValue=" "/>
+		<db:in-param name="numberOfEmployees" defaultValue=" "/>
+		<db:in-param name="phone" defaultValue=" "/>
+		<db:in-param name="rating" defaultValue=" "/>
+		<db:in-param name="shippingCity" defaultValue=" "/>
+		<db:in-param name="shippingCountry" defaultValue=" "/>
+		<db:in-param name="shippingPostalCode" defaultValue=" "/>
+		<db:in-param name="shippingState" defaultValue=" "/>
+		<db:in-param name="shippingStreet" defaultValue=" "/>
+		<db:in-param name="sic" defaultValue=" "/>
+		<db:in-param name="sicDesc" defaultValue=" "/>
+		<db:in-param name="site" defaultValue=" "/>
+		<db:in-param name="tickerSymbol" defaultValue=" "/>
+		<db:in-param name="type" defaultValue=" "/>
+		<db:in-param name="website" defaultValue=" "/>
+		<db:in-param name="ownerId" defaultValue=" "/>
+		<db:in-param name="parentId" defaultValue=" "/>
+        <db:in-param name="name" defaultValue=" "/>
     </db:template-query>    
 </mule>
