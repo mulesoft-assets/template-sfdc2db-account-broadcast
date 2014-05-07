@@ -27,10 +27,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		doc:name="Generic Database Configuration"
 		doc:description="Include jar for your database and supply correct url pointing to your database eg" />
 
-    <db:template-query name="QueryAccountByName" doc:name="Template Query">
+    <db:template-query name="QueryAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[select AccountNumber, AnnualRevenue, AccountSource, Name, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, NumberOfEmployees, Phone, Rating, ShippingCity, ShippingCountry,
-         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId from Account where Name = ?]]></db:parameterized-query>
-        <db:in-param name="paramName" defaultValue=" "/>
+         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId, SalesforceId from Account where SalesforceId = ?]]></db:parameterized-query>
+        <db:in-param name="paramId" defaultValue=" "/>
     </db:template-query>
         <db:template-query name="UpdateAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[UPDATE Account SET 
@@ -60,6 +60,7 @@ tickerSymbol = ?,
 type = ?,
 website = ?,
 ownerId = ?,
+salesforceId = ?,
 parentId = ?
 WHERE name = ?]]></db:parameterized-query>
         <db:in-param name="accountNumber" defaultValue=" "/>
@@ -89,12 +90,13 @@ WHERE name = ?]]></db:parameterized-query>
 		<db:in-param name="website" defaultValue=" "/>
 		<db:in-param name="ownerId" defaultValue=" "/>
 		<db:in-param name="parentId" defaultValue=" "/>
+		<db:in-param name="salesforceId" defaultValue=" "/>
         <db:in-param name="name" defaultValue=" "/>
     </db:template-query>
     <db:template-query name="InsertAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[INSERT INTO Account (accountNumber, annualRevenue, billingCity, accountSource, billingCountry, billingPostalCode, billingState, billingStreet, description, fax, industry, numberOfEmployees, phone, rating, shippingCity, shippingCountry,
-         shippingPostalCode, shippingState, shippingStreet, sic, sicDesc, site, tickerSymbol, type, website, ownerId, parentId, name)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]]></db:parameterized-query>
+         shippingPostalCode, shippingState, shippingStreet, sic, sicDesc, site, tickerSymbol, type, website, ownerId, parentId, salesforceId, name)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]]></db:parameterized-query>
         <db:in-param name="accountNumber" defaultValue=" "/>
         <db:in-param name="annualRevenue" defaultValue=" "/>
         <db:in-param name="billingCity" defaultValue=" "/>
@@ -122,6 +124,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
 		<db:in-param name="website" defaultValue=" "/>
 		<db:in-param name="ownerId" defaultValue=" "/>
 		<db:in-param name="parentId" defaultValue=" "/>
+		<db:in-param name="salesforceId" defaultValue=" "/>
         <db:in-param name="name" defaultValue=" "/>
     </db:template-query>    
 </mule>

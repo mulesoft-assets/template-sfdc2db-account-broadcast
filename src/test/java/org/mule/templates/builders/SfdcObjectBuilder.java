@@ -11,8 +11,8 @@ public class SfdcObjectBuilder {
 		this.fields = new HashMap<String, Object>();
 	}
 
-	public SfdcObjectBuilder with(String field, Object value) {
-		SfdcObjectBuilder copy = new SfdcObjectBuilder();
+	public SfdcObjectBuilder with(final String field, final Object value) {
+		final SfdcObjectBuilder copy = new SfdcObjectBuilder();
 		copy.fields.putAll(this.fields);
 		copy.fields.put(field, value);
 		return copy;

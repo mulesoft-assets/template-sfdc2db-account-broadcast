@@ -13,8 +13,8 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
             <batch:step name="checkAccountInDatabaseStep">
                 <enricher source="#[payload]" target="#[recordVars.account]" doc:name="Store payload into variable 'account'">
                     <db:select config-ref="GenericDatabaseConnector" doc:name="query Account by matching name from Database">
-                        <db:template-query-ref name="QueryAccountByName"/>
-                        <db:in-param name="paramName" value="#[payload.Name]"/>
+                        <db:template-query-ref name="QueryAccount"/>
+                        <db:in-param name="paramId" value="#[payload.Id]"/>
                     </db:select>
                 </enricher>
             </batch:step>
@@ -49,8 +49,8 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
                         <db:in-param name="website" value="#[payload.Website]"/>
                         <db:in-param name="ownerId" value="#[payload.OwnerId]"/>
                         <db:in-param name="parentId" value="#[payload.ParentId]"/>
+                        <db:in-param name="salesforceId" value="#[payload.Id]"/>
                         <db:in-param name="name" value="#[payload.Name]"/>
-<!-- OwnerId, Ownership, ParentId  -->
                     </db:update>
                 </batch:commit>
             </batch:step>
@@ -85,6 +85,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 				        <db:in-param name="website" value="#[payload.Website]"/>
 						<db:in-param name="ownerId" value="#[payload.OwnerId]"/>
 						<db:in-param name="parentId" value="#[payload.ParentId]"/>
+                        <db:in-param name="salesforceId" value="#[payload.Id]"/>
 				        <db:in-param name="name" value="#[payload.Name]"/>
                     </db:insert>
                 </batch:commit>
