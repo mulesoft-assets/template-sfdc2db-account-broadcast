@@ -15,7 +15,7 @@
  
 
 # Use Case <a name="usecase"/>
-As a Salesforce admin I want to syncronize Accounts between Salesfoce org and database.
+As a Salesforce admin I want to syncronize Accounts between Salesfoce and database.
 
 This Template should serve as a foundation for setting an online sync of Accounts from one SalesForce instance to database. Everytime there is a new Account or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the Account on the target database table.
 
@@ -69,7 +69,7 @@ In order to use this Template you need to configure properties (Credentials, con
 + watermark.defaultExpression `YESTERDAY`
 
 
-#### SalesForce Connector configuration for company A
+### SalesForce Connector configuration
 + sfdc.a.username `bob.dylan@orga`
 + sfdc.a.password `DylanPassword123`
 + sfdc.a.securityToken `avsfwCUl7apQs56Xq2AKi3X`
@@ -77,6 +77,8 @@ In order to use this Template you need to configure properties (Credentials, con
 
 ### Database Connector configuration
 + database.url=jdbc:mysql://192.168.224.130:3306/mule?user=mule&password=mule
+
+If it is required to connect to a different Database there should be provided the jar for the library and changed the value of that field in the connector.
 
 # API Calls <a name="apicalls"/>
 
@@ -107,7 +109,7 @@ In the visual editor they can be found on the *Global Element* tab.
 ## businessLogic.xml<a name="businesslogicxml"/>
 Functional aspect of the Template is implemented on this XML, directed by one flow that will poll for SalesForce creations/updates. The severeal message processors constitute four high level actions that fully implement the logic of this Template:
 
-1. During the Input stage the Template will go to the SalesForce Org A and query all the existing Accounts that match the filter criteria.
+1. During the Input stage the Template will go to the SalesForce and query all the existing Accounts that match the filter criteria.
 2. During the Process stage, each SFDC Account will checked by name against database, if it has an existing matching user in database.
 3. The choice routing element will then decide whether to perform update on selected database columns or peform insert
 Finally during the On Complete stage the Template will logoutput statistics data into the console.

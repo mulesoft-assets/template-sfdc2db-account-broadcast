@@ -6,7 +6,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd">
     <sub-flow name="insertSalesforceAccountSubFlow" doc:name="insertSalesforceAccountSubFlow">
-        <sfdc:upsert config-ref="SalesforceA" externalIdFieldName="Id" type="Account" doc:name="Insert Account">
+        <sfdc:upsert config-ref="Salesforce" externalIdFieldName="Id" type="Account" doc:name="Insert Account">
      		<sfdc:objects>
                 <sfdc:object>
                     <sfdc:inner-object key="AccountNumber">#[payload.AccountNumber]</sfdc:inner-object>
