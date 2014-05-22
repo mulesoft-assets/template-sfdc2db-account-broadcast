@@ -29,40 +29,40 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
     <db:template-query name="QueryAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[select AccountNumber, AnnualRevenue, AccountSource, Name, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, NumberOfEmployees, Phone, Rating, ShippingCity, ShippingCountry,
-         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId, SalesforceId from Account where SalesforceId = ?]]></db:parameterized-query>
+         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId, SalesforceId from Account where SalesforceId = :paramId]]></db:parameterized-query>
         <db:in-param name="paramId" defaultValue=" "/>
     </db:template-query>
         <db:template-query name="UpdateAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[UPDATE Account SET 
-accountNumber = ?, 
-annualRevenue = ?, 
-billingCity = ?,
-accountSource = ?,
-billingCountry = ?,
-billingPostalCode = ?,
-billingState = ?,
-billingStreet = ?,
-description = ?,
-fax = ?,
-industry = ?,
-numberOfEmployees = ?,
-phone = ?,
-rating = ?,
-shippingCity = ?,
-shippingCountry = ?,
-shippingPostalCode = ?,
-shippingState = ?,
-shippingStreet = ?,
-sic = ?,
-sicDesc = ?,
-site = ?,
-tickerSymbol = ?,
-type = ?,
-website = ?,
-ownerId = ?,
-salesforceId = ?,
-parentId = ?
-WHERE name = ?]]></db:parameterized-query>
+accountNumber = :accountNumber, 
+annualRevenue = :annualRevenue, 
+billingCity = :billingCity,
+accountSource = :accountSource:,
+billingCountry = :billingCountry,
+billingPostalCode = :billingPostalCode,
+billingState = :billingState,
+billingStreet = :billingStreet,
+description = :description,
+fax = :fax,
+industry = :industry,
+numberOfEmployees = :numberOfEmployees,
+phone = :phone,
+rating = :rating,
+shippingCity = :shippingCity,
+shippingCountry = :shippingCountry,
+shippingPostalCode = :shippingPostalCode,
+shippingState = :shippingState,
+shippingStreet = :shippingStreet,
+sic = :sic,
+sicDesc = :sicDesc,
+site = :site,
+tickerSymbol = :tickerSymbol,
+type = :type,
+website = :website,
+ownerId = :ownerId,
+salesforceId = :salesforceId,
+parentId = :parentId
+WHERE name = :name]]></db:parameterized-query>
         <db:in-param name="accountNumber" defaultValue=" "/>
         <db:in-param name="annualRevenue" defaultValue=" "/>
         <db:in-param name="billingCity" defaultValue=" "/>
@@ -96,7 +96,7 @@ WHERE name = ?]]></db:parameterized-query>
     <db:template-query name="InsertAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[INSERT INTO Account (accountNumber, annualRevenue, billingCity, accountSource, billingCountry, billingPostalCode, billingState, billingStreet, description, fax, industry, numberOfEmployees, phone, rating, shippingCity, shippingCountry,
          shippingPostalCode, shippingState, shippingStreet, sic, sicDesc, site, tickerSymbol, type, website, ownerId, parentId, salesforceId, name)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]]></db:parameterized-query>
+VALUES (:accountNumber, :annualRevenue, :billingCity, :accountSource, :billingCountry, :billingPostalCode, :billingState, :billingStreet, :description, :fax, :industry, :numberOfEmployees, :phone, :rating, :shippingCity, :shippingCountry, :shippingPostalCode, :shippingState, :shippingStreet, :sic, :sicDesc, :site, :tickerSymbol, :type, :website, :ownerId, :parentId, :salesforceId, :name)]]></db:parameterized-query>
         <db:in-param name="accountNumber" defaultValue=" "/>
         <db:in-param name="annualRevenue" defaultValue=" "/>
         <db:in-param name="billingCity" defaultValue=" "/>
