@@ -35,6 +35,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	
 	private BatchTestHelper helper;
 	private Map<String, Object> account;
+	private SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow;
 
 	@BeforeClass
 	public static void init() {
@@ -51,6 +52,8 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		registerListeners();
 		helper = new BatchTestHelper(muleContext);
 
+		selectAccountFromDBFlow = getSubFlow("selectAccountFromDB");
+		
 		// prepare test data
 		account = createSalesforceAccount();
 		insertSalesforceAccount(account);
@@ -61,7 +64,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		stopFlowSchedulers(POLL_FLOW_NAME);
 		// delete previously created account from DB by matching ID
 		final Map<String, Object> acc = new HashMap<String, Object>();
-		acc.put("Id", account.get("Id"));
+		acc.put("Name", account.get("Name"));
 		deleteAccountFromDB(acc);
 	}
 
@@ -77,13 +80,13 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		helper.assertJobWasSuccessful();
 
 		// Execute selectAccountFromDB sublow
-		final SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow = getSubFlow("selectAccountFromDB");
 		final MuleEvent event = selectAccountFromDBFlow.process(getTestEvent(account, MessageExchangePattern.REQUEST_RESPONSE));
 		final List<Map<String, Object>> payload = (List<Map<String, Object>>) event.getMessage().getPayload();
 
 		// print result
-		for (Map<String, Object> acc : payload)
+		for (Map<String, Object> acc : payload){
 			log.info("selectAccountFromDB response: " + acc);
+		}
 
 		// Account previously created in Salesforce should be present in database
 		Assert.assertEquals("The account should have been sync", 1, payload.size());

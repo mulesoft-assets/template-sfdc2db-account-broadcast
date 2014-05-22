@@ -10,7 +10,6 @@ http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfd
      		<sfdc:objects>
                 <sfdc:object>
                     <sfdc:inner-object key="AccountNumber">#[payload.AccountNumber]</sfdc:inner-object>
-                    <sfdc:inner-object key="Id">#[payload.Id]</sfdc:inner-object>
                     <sfdc:inner-object key="Phone">#[payload.Phone]</sfdc:inner-object>
                     <sfdc:inner-object key="Name">#[payload.Name]</sfdc:inner-object>
                 </sfdc:object>
@@ -19,13 +18,13 @@ http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfd
     </sub-flow>
     <sub-flow name="deleteAccountFromDB" doc:name="deleteAccountFromDB">
         <db:delete config-ref="GenericDatabaseConnector" doc:name="Database">
-            <db:parameterized-query><![CDATA[delete from Account where salesforceId = #[payload.Id]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[delete from Account where name = #[payload.Name]]]></db:parameterized-query>
         </db:delete>
     </sub-flow>    
     <sub-flow name="selectAccountFromDB" doc:name="selectAccountFromDB">
         <db:select config-ref="GenericDatabaseConnector" doc:name="Database">
             <db:template-query-ref name="QueryAccount"/>
-            <db:in-param name="paramId" value="#[message.payload['Id']]"/>
+            <db:in-param name="paramName" value="#[payload.Name]"/>
         </db:select>
     </sub-flow>
 </mule>

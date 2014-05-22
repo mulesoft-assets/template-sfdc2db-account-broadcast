@@ -29,8 +29,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
     <db:template-query name="QueryAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[select AccountNumber, AnnualRevenue, AccountSource, Name, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, NumberOfEmployees, Phone, Rating, ShippingCity, ShippingCountry,
-         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId, SalesforceId from Account where SalesforceId = :paramId]]></db:parameterized-query>
-        <db:in-param name="paramId" defaultValue=" "/>
+         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId, SalesforceId from Account where Name = :paramName]]></db:parameterized-query>
+        <db:in-param name="paramName" defaultValue=" "/>
     </db:template-query>
         <db:template-query name="UpdateAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[UPDATE Account SET 

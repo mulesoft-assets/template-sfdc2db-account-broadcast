@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
                 <enricher source="#[payload]" target="#[recordVars.account]" doc:name="Store payload into variable 'account'">
                     <db:select config-ref="GenericDatabaseConnector" doc:name="query Account by matching name from Database">
                         <db:template-query-ref name="QueryAccount"/>
-                        <db:in-param name="paramId" value="#[payload.Id]"/>
+                        <db:in-param name="paramName" value="#[payload.Name]"/>
                     </db:select>
                 </enricher>
             </batch:step>
