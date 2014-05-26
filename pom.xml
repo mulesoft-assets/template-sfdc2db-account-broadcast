@@ -6,6 +6,7 @@
 	<artifactId>template-sfdc2db-account-broadcast</artifactId>
 	<packaging>mule</packaging>
 	<version>1.0.0-SNAPSHOT</version>
+	<name>sfdc2db-account-bidirectional-sync Mule Anypoint Template Project</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
