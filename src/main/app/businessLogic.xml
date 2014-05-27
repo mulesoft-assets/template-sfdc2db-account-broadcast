@@ -22,7 +22,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
                 </enricher>
             </batch:step>
             <batch:step name="updateAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() == 0]">
-                <data-mapper:transform config-ref="Account_To_Account" doc:name="Account To Account"/>
+                <data-mapper:transform config-ref="Account_To_Account" doc:name="transform Salesforce Account To database Account"/>
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:update config-ref="GenericDatabaseConnector" doc:name="update account in database" bulkMode="true">
                         <db:template-query-ref name="UpdateAccount"/>
@@ -60,7 +60,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
                 </batch:commit>
             </batch:step>
             <batch:step name="insertAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() &gt; 0]">
-                <data-mapper:transform config-ref="Account_To_Account_1" doc:name="Account To Account"/>
+                <data-mapper:transform config-ref="Account_To_Account_1" doc:name="transform Salesforce Account To database Account"/>
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:insert config-ref="GenericDatabaseConnector" doc:name="insert account in database" bulkMode="true">
                         <db:template-query-ref name="InsertAccount"/>

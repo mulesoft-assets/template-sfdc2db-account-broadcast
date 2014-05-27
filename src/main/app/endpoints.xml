@@ -15,6 +15,6 @@ Here you should:
             <watermark variable="lastQueryDate" default-expression="YESTERDAY" selector="MAX" selector-expression="#[payload.LastModifiedDate]"/>
             <sfdc:query config-ref="Salesforce" query="dsql:SELECT Id, AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, LastModifiedDate, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website FROM Account WHERE LastModifiedDate &gt; #[lastQueryDate]" fetchSize="200" doc:name="Query Accounts with filtering criteria from Salesforce"/>
         </poll>
-        <batch:execute name="syncAccountsBatch" doc:name="Trigger Batch execute for Upsert in database"/>
+        <batch:execute name="syncAccountsBatch" doc:name="trigger syncAccountsBatch"/>
     </flow>
 </mule>
