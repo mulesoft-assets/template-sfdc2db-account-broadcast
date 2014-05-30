@@ -18,41 +18,22 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
                         <db:template-query-ref name="QueryAccount"/>
                         <db:in-param name="paramName" value="#[payload.Name]"/>
 
+
+
                     </db:select>
                 </enricher>
+
             </batch:step>
             <batch:step name="updateAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() == 0]">
-                <data-mapper:transform config-ref="Account_To_Account" doc:name="transform Salesforce Account To database Account"/>
+                <data-mapper:transform config-ref="Account_To_Account" doc:name="Account To Account"/>
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:update config-ref="GenericDatabaseConnector" doc:name="update account in database" bulkMode="true">
                         <db:template-query-ref name="UpdateAccount"/>
                         <db:in-param name="accountNumber" value="#[payload.AccountNumber]"/>
-                        <db:in-param name="annualRevenue" value="#[payload.AnnualRevenue]"/>
-                        <db:in-param name="billingCity" value="#[payload.BillingCity]"/>
-                        <db:in-param name="accountSource" value="#[payload.AccountSource]"/>
-                        <db:in-param name="billingCountry" value="#[payload.BillingCountry]"/>
-                        <db:in-param name="billingPostalCode" value="#[payload.BillingPostalCode]"/>
-                        <db:in-param name="billingState" value="#[payload.BillingState]"/>
-                        <db:in-param name="billingStreet" value="#[payload.BillingStreet]"/>
                         <db:in-param name="description" value="#[payload.Description]"/>
-                        <db:in-param name="fax" value="#[payload.Fax]"/>
-                        <db:in-param name="industry" value="#[payload.Industry]"/>
                         <db:in-param name="numberOfEmployees" value="#[payload.NumberOfEmployees]"/>
                         <db:in-param name="phone" value="#[payload.Phone]"/>
-                        <db:in-param name="rating" value="#[payload.Rating]"/>
-                        <db:in-param name="shippingCity" value="#[payload.ShippingCity]"/>
-                        <db:in-param name="shippingCountry" value="#[payload.ShippingCountry]"/>
-                        <db:in-param name="shippingPostalCode" value="#[payload.ShippingPostalCode]"/>
-                        <db:in-param name="shippingState" value="#[payload.ShippingState]"/>
-                        <db:in-param name="shippingStreet" value="#[payload.ShippingStreet]"/>
-                        <db:in-param name="sic" value="#[payload.Sic]"/>
-                        <db:in-param name="sicDesc" value="#[payload.SicDesc]"/>
-                        <db:in-param name="site" value="#[payload.Site]"/>
-                        <db:in-param name="tickerSymbol" value="#[payload.TickerSymbol]"/>
                         <db:in-param name="type" value="#[payload.Type]"/>
-                        <db:in-param name="website" value="#[payload.Website]"/>
-                        <db:in-param name="ownerId" value="#[payload.OwnerId]"/>
-                        <db:in-param name="parentId" value="#[payload.ParentId]"/>
                         <db:in-param name="salesforceId" value="#[payload.Id]"/>
                         <db:in-param name="name" value="#[payload.Name]"/>
 
@@ -60,39 +41,17 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
                 </batch:commit>
             </batch:step>
             <batch:step name="insertAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() &gt; 0]">
-                <data-mapper:transform config-ref="Account_To_Account_1" doc:name="transform Salesforce Account To database Account"/>
+                <data-mapper:transform config-ref="Account_To_Account_1" doc:name="Account To Account"/>
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:insert config-ref="GenericDatabaseConnector" doc:name="insert account in database" bulkMode="true">
                         <db:template-query-ref name="InsertAccount"/>
-				        <db:in-param name="accountNumber" value="#[payload.AccountNumber]"/>
-				        <db:in-param name="annualRevenue" value="#[payload.AnnualRevenue]"/>
-				        <db:in-param name="billingCity" value="#[payload.BillingCity]"/>
-				        <db:in-param name="accountSource" value="#[payload.AccountSource]"/>
-				        <db:in-param name="billingCountry" value="#[payload.BillingCountry]"/>
-				        <db:in-param name="billingPostalCode" value="#[payload.BillingPostalCode]"/>
-				        <db:in-param name="billingState" value="#[payload.BillingState]"/>
-				        <db:in-param name="billingStreet" value="#[payload.BillingStreet]"/>
-				        <db:in-param name="description" value="#[payload.Description]"/>
-				        <db:in-param name="fax" value="#[payload.Fax]"/>
-				        <db:in-param name="industry" value="#[payload.Industry]"/>
-				        <db:in-param name="numberOfEmployees" value="#[payload.NumberOfEmployees]"/>
-				        <db:in-param name="phone" value="#[payload.Phone]"/>
-				        <db:in-param name="rating" value="#[payload.Rating]"/>
-				        <db:in-param name="shippingCity" value="#[payload.ShippingCity]"/>
-				        <db:in-param name="shippingCountry" value="#[payload.ShippingCountry]"/>
-				        <db:in-param name="shippingPostalCode" value="#[payload.ShippingPostalCode]"/>
-				        <db:in-param name="shippingState" value="#[payload.ShippingState]"/>
-				        <db:in-param name="shippingStreet" value="#[payload.ShippingStreet]"/>
-				        <db:in-param name="sic" value="#[payload.Sic]"/>
-				        <db:in-param name="sicDesc" value="#[payload.SicDesc]"/>
-				        <db:in-param name="site" value="#[payload.Site]"/>
-				        <db:in-param name="tickerSymbol" value="#[payload.TickerSymbol]"/>
-				        <db:in-param name="type" value="#[payload.Type]"/>
-				        <db:in-param name="website" value="#[payload.Website]"/>
-						<db:in-param name="ownerId" value="#[payload.OwnerId]"/>
-						<db:in-param name="parentId" value="#[payload.ParentId]"/>
+                        <db:in-param name="accountNumber" value="#[payload.AccountNumber]"/>
+                        <db:in-param name="description" value="#[payload.Description]"/>
+                        <db:in-param name="numberOfEmployees" value="#[payload.NumberOfEmployees]"/>
+                        <db:in-param name="phone" value="#[payload.Phone]"/>
+                        <db:in-param name="type" value="#[payload.Type]"/>
                         <db:in-param name="salesforceId" value="#[payload.Id]"/>
-				        <db:in-param name="name" value="#[payload.Name]"/>
+                        <db:in-param name="name" value="#[payload.Name]"/>
                     </db:insert>
                 </batch:commit>
             </batch:step>

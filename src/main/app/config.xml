@@ -28,103 +28,38 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		doc:description="Include jar for your database and supply correct url pointing to your database eg" />
 
     <db:template-query name="QueryAccount" doc:name="Template Query">
-        <db:parameterized-query><![CDATA[select AccountNumber, AnnualRevenue, AccountSource, Name, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, NumberOfEmployees, Phone, Rating, ShippingCity, ShippingCountry,
-         ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website, OwnerId, ParentId, SalesforceId from Account where Name = :paramName]]></db:parameterized-query>
-        <db:in-param name="paramName" defaultValue=" "/>
+        <db:parameterized-query><![CDATA[select AccountNumber, Name, Description, NumberOfEmployees, Phone, Type, SalesforceId from Account where Name = :paramName]]></db:parameterized-query>
+        <db:in-param name="paramId" defaultValue=" "/>
+
     </db:template-query>
         <db:template-query name="UpdateAccount" doc:name="Template Query">
         <db:parameterized-query><![CDATA[UPDATE Account SET 
 accountNumber = :accountNumber, 
-annualRevenue = :annualRevenue, 
-billingCity = :billingCity,
-accountSource = :accountSource:,
-billingCountry = :billingCountry,
-billingPostalCode = :billingPostalCode,
-billingState = :billingState,
-billingStreet = :billingStreet,
 description = :description,
-fax = :fax,
-industry = :industry,
 numberOfEmployees = :numberOfEmployees,
 phone = :phone,
-rating = :rating,
-shippingCity = :shippingCity,
-shippingCountry = :shippingCountry,
-shippingPostalCode = :shippingPostalCode,
-shippingState = :shippingState,
-shippingStreet = :shippingStreet,
-sic = :sic,
-sicDesc = :sicDesc,
-site = :site,
-tickerSymbol = :tickerSymbol,
 type = :type,
-website = :website,
-ownerId = :ownerId,
-salesforceId = :salesforceId,
-parentId = :parentId
+salesforceId = :salesforceId
 WHERE name = :name]]></db:parameterized-query>
         <db:in-param name="accountNumber" defaultValue=" "/>
-        <db:in-param name="annualRevenue" defaultValue=" "/>
-        <db:in-param name="billingCity" defaultValue=" "/>
-        <db:in-param name="accountSource" defaultValue=" "/>
-		<db:in-param name="billingCountry" defaultValue=" "/>
-		<db:in-param name="billingPostalCode" defaultValue=" "/>
-		<db:in-param name="billingState" defaultValue=" "/>
-		<db:in-param name="billingStreet" defaultValue=" "/>
-		<db:in-param name="description" defaultValue=" "/>
-		<db:in-param name="fax" defaultValue=" "/>
-		<db:in-param name="industry" defaultValue=" "/>
-		<db:in-param name="numberOfEmployees" defaultValue=" "/>
-		<db:in-param name="phone" defaultValue=" "/>
-		<db:in-param name="rating" defaultValue=" "/>
-		<db:in-param name="shippingCity" defaultValue=" "/>
-		<db:in-param name="shippingCountry" defaultValue=" "/>
-		<db:in-param name="shippingPostalCode" defaultValue=" "/>
-		<db:in-param name="shippingState" defaultValue=" "/>
-		<db:in-param name="shippingStreet" defaultValue=" "/>
-		<db:in-param name="sic" defaultValue=" "/>
-		<db:in-param name="sicDesc" defaultValue=" "/>
-		<db:in-param name="site" defaultValue=" "/>
-		<db:in-param name="tickerSymbol" defaultValue=" "/>
-		<db:in-param name="type" defaultValue=" "/>
-		<db:in-param name="website" defaultValue=" "/>
-		<db:in-param name="ownerId" defaultValue=" "/>
-		<db:in-param name="parentId" defaultValue=" "/>
-		<db:in-param name="salesforceId" defaultValue=" "/>
+        <db:in-param name="description" defaultValue=" "/>
+        <db:in-param name="numberOfEmployees" defaultValue=" "/>
+        <db:in-param name="phone" defaultValue=" "/>
+        <db:in-param name="type" defaultValue=" "/>
+        <db:in-param name="salesforceId" defaultValue=" "/>
         <db:in-param name="name" defaultValue=" "/>
+
     </db:template-query>
     <db:template-query name="InsertAccount" doc:name="Template Query">
-        <db:parameterized-query><![CDATA[INSERT INTO Account (accountNumber, annualRevenue, billingCity, accountSource, billingCountry, billingPostalCode, billingState, billingStreet, description, fax, industry, numberOfEmployees, phone, rating, shippingCity, shippingCountry,
-         shippingPostalCode, shippingState, shippingStreet, sic, sicDesc, site, tickerSymbol, type, website, ownerId, parentId, salesforceId, name)
-VALUES (:accountNumber, :annualRevenue, :billingCity, :accountSource, :billingCountry, :billingPostalCode, :billingState, :billingStreet, :description, :fax, :industry, :numberOfEmployees, :phone, :rating, :shippingCity, :shippingCountry, :shippingPostalCode, :shippingState, :shippingStreet, :sic, :sicDesc, :site, :tickerSymbol, :type, :website, :ownerId, :parentId, :salesforceId, :name)]]></db:parameterized-query>
+        <db:parameterized-query><![CDATA[INSERT INTO Account (accountNumber, description, numberOfEmployees, phone, typesalesforceId, name)
+VALUES (:accountNumber, :description, :numberOfEmployees, :phone, :type, :salesforceId, :name)]]></db:parameterized-query>
         <db:in-param name="accountNumber" defaultValue=" "/>
-        <db:in-param name="annualRevenue" defaultValue=" "/>
-        <db:in-param name="billingCity" defaultValue=" "/>
-        <db:in-param name="accountSource" defaultValue=" "/>
-		<db:in-param name="billingCountry" defaultValue=" "/>
-		<db:in-param name="billingPostalCode" defaultValue=" "/>
-		<db:in-param name="billingState" defaultValue=" "/>
-		<db:in-param name="billingStreet" defaultValue=" "/>
-		<db:in-param name="description" defaultValue=" "/>
-		<db:in-param name="fax" defaultValue=" "/>
-		<db:in-param name="industry" defaultValue=" "/>
-		<db:in-param name="numberOfEmployees" defaultValue=" "/>
-		<db:in-param name="phone" defaultValue=" "/>
-		<db:in-param name="rating" defaultValue=" "/>
-		<db:in-param name="shippingCity" defaultValue=" "/>
-		<db:in-param name="shippingCountry" defaultValue=" "/>
-		<db:in-param name="shippingPostalCode" defaultValue=" "/>
-		<db:in-param name="shippingState" defaultValue=" "/>
-		<db:in-param name="shippingStreet" defaultValue=" "/>
-		<db:in-param name="sic" defaultValue=" "/>
-		<db:in-param name="sicDesc" defaultValue=" "/>
-		<db:in-param name="site" defaultValue=" "/>
-		<db:in-param name="tickerSymbol" defaultValue=" "/>
-		<db:in-param name="type" defaultValue=" "/>
-		<db:in-param name="website" defaultValue=" "/>
-		<db:in-param name="ownerId" defaultValue=" "/>
-		<db:in-param name="parentId" defaultValue=" "/>
-		<db:in-param name="salesforceId" defaultValue=" "/>
+        <db:in-param name="description" defaultValue=" "/>
+        <db:in-param name="numberOfEmployees" defaultValue=" "/>
+        <db:in-param name="phone" defaultValue=" "/>
+        <db:in-param name="type" defaultValue=" "/>
+        <db:in-param name="salesforceId" defaultValue=" "/>
         <db:in-param name="name" defaultValue=" "/>
+
     </db:template-query>    
 </mule>
