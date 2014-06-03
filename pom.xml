@@ -210,6 +210,12 @@
                                     <version>${mule.version}</version>
                                     <type>zip</type>
                                 </artifactItem>
+                                <artifactItem>
+									<groupId>com.mulesoft.muleesb.datamapper</groupId>
+    								<artifactId>mule-clover-plugins</artifactId>
+									<version>${mule.version}</version>
+									<type>zip</type>
+								</artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -225,6 +231,7 @@
                             <tasks>
                                 <!-- Using an ant task to deflate cloveretl-engine.zip -->
                                 <unzip dest="${project.build.testOutputDirectory}" src="${project.build.testOutputDirectory}/cloveretl-engine.zip"/>
+                                <unzip dest="${project.build.testOutputDirectory}" src="${project.build.testOutputDirectory}/mule-clover-plugins.zip"/>
                             </tasks>
                         </configuration>
                         <goals>
