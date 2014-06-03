@@ -22,41 +22,60 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 
                     </db:select>
                 </enricher>
+                <logger message="333333 #[recordVars.account]   #[payload]" level="INFO" doc:name="Logger"/>
 
             </batch:step>
             <batch:step name="updateAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() == 0]">
                 <data-mapper:transform config-ref="Account_To_Account" doc:name="Account To Account"/>
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:update config-ref="GenericDatabaseConnector" doc:name="update account in database" bulkMode="true">
-                        <db:template-query-ref name="UpdateAccount"/>
-                        <db:in-param name="accountNumber" value="#[payload.AccountNumber]"/>
-                        <db:in-param name="description" value="#[payload.Description]"/>
-                        <db:in-param name="numberOfEmployees" value="#[payload.NumberOfEmployees]"/>
-                        <db:in-param name="phone" value="#[payload.Phone]"/>
-                        <db:in-param name="type" value="#[payload.Type]"/>
-                        <db:in-param name="salesforceId" value="#[payload.Id]"/>
-                        <db:in-param name="name" value="#[payload.Name]"/>
+                        <db:parameterized-query><![CDATA[UPDATE Account SET
+AccountNumber = #[payload['AccountNumber']], 
+Description = #[payload['Description']],  
+NumberOfEmployees = #[payload['NumberOfEmployees']], 
+Phone = #[payload['Phone']], 
+Type = #[payload['Type']],	
+LastModifiedDate = CURRENT_TIMESTAMP
+WHERE Name = #[payload['Name']]]]></db:parameterized-query>
+
 
                     </db:update>
                 </batch:commit>
             </batch:step>
             <batch:step name="insertAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() &gt; 0]">
                 <data-mapper:transform config-ref="Account_To_Account_1" doc:name="Account To Account"/>
+                <logger message="55555555555555 #[payload]" level="INFO" doc:name="Logger"/>
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:insert config-ref="GenericDatabaseConnector" doc:name="insert account in database" bulkMode="true">
-                        <db:template-query-ref name="InsertAccount"/>
-                        <db:in-param name="accountNumber" value="#[payload.AccountNumber]"/>
-                        <db:in-param name="description" value="#[payload.Description]"/>
-                        <db:in-param name="numberOfEmployees" value="#[payload.NumberOfEmployees]"/>
-                        <db:in-param name="phone" value="#[payload.Phone]"/>
-                        <db:in-param name="type" value="#[payload.Type]"/>
-                        <db:in-param name="salesforceId" value="#[payload.Id]"/>
-                        <db:in-param name="name" value="#[payload.Name]"/>
+                        <db:parameterized-query><![CDATA[INSERT INTO Account (
+	AccountNumber,
+	Description,
+	Name,
+	NumberOfEmployees,
+	Phone,
+	Type,
+	SalesforceId,
+	LastModifiedById,
+	LastModifiedDate
+) VALUES (
+	#[payload['AccountNumber']],
+	#[payload['Description']],
+	#[payload['Name']],
+	#[payload['NumberOfEmployees']],
+	#[payload['Phone']],
+	#[payload['Type']],
+	#[payload['Id']],
+	CURRENT_USER,
+	CURRENT_TIMESTAMP
+)]]></db:parameterized-query>
+
                     </db:insert>
+                    <logger message="44444 #[payload]" level="INFO" doc:name="log response"/>
                 </batch:commit>
             </batch:step>
         </batch:process-records>
         <batch:on-complete>
+            <logger message="777777777777777777777 #[payload]" level="INFO" doc:name="Logger"/>
             <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
             <logger message="Migration process has finished: #[payload]" level="INFO" doc:name="log 'Migration process has finished'"/>
         </batch:on-complete>

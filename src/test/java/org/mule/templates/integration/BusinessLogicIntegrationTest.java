@@ -1,11 +1,10 @@
 package org.mule.templates.integration;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -17,6 +16,7 @@ import org.mule.api.MuleEvent;
 import org.mule.modules.salesforce.bulk.EnrichedUpsertResult;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.templates.builders.SfdcObjectBuilder;
+import org.mule.templates.db.MySQLDbCreator;
 
 import com.mulesoft.module.batch.BatchTestHelper;
 
@@ -36,6 +36,11 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 	private BatchTestHelper helper;
 	private Map<String, Object> account;
 	private SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow;
+	
+	private static final String PATH_TO_TEST_PROPERTIES = "./src/test/resources/mule.test.properties";
+	private static final String PATH_TO_SQL_SCRIPT = "src/main/resources/account.sql";
+	private static final String DATABASE_NAME = "SFDC2DBAccountBroadcast" + new Long(new Date().getTime()).toString();
+	private static final MySQLDbCreator DBCREATOR = new MySQLDbCreator(DATABASE_NAME, PATH_TO_SQL_SCRIPT, PATH_TO_TEST_PROPERTIES);
 
 	@BeforeClass
 	public static void init() {
@@ -44,6 +49,9 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		System.setProperty("poll.startDelayMillis", "20000");
 		System.setProperty("watermark.default.expression",
 				"#[groovy: new Date(System.currentTimeMillis() - 10000).format(\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\", TimeZone.getTimeZone('UTC'))]");
+	
+		DBCREATOR.setUpDatabase();
+		System.setProperty("database.url", DBCREATOR.getDatabaseUrlWithName());
 	}
 
 	@Before
@@ -66,6 +74,7 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		final Map<String, Object> acc = new HashMap<String, Object>();
 		acc.put("Name", account.get("Name"));
 		deleteAccountFromDB(acc);
+		DBCREATOR.tearDownDataBase();
 	}
 
 	@Test
