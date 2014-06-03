@@ -24,10 +24,10 @@ import com.mulesoft.module.batch.BatchTestHelper;
  * The objective of this class is to validate the correct behavior of the flows
  * for this Mule Template that make calls to external systems.
  */
-public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
+public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 	protected static final int TIMEOUT = 60;
-	private static final Logger log = Logger.getLogger(BusinessLogicIntegrationTest.class);
+	private static final Logger log = Logger.getLogger(BusinessLogicIT.class);
 	private static final String POLL_FLOW_NAME = "triggerFlow";
 	private static final String ACCOUNT_NAME = "Account Test Name";
 	private static final String ACCOUNT_NUMBER = "123456789";
