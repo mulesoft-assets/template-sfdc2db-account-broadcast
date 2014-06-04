@@ -1,5 +1,6 @@
 package org.mule.templates.integration;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 	private BatchTestHelper helper;
 	private Map<String, Object> account;
 	private SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow;
+	private SubflowInterceptingChainLifecycleWrapper deleteAccountFromSalesforce;
 	
 	private static final String PATH_TO_TEST_PROPERTIES = "./src/test/resources/mule.test.properties";
 	private static final String PATH_TO_SQL_SCRIPT = "src/main/resources/account.sql";
@@ -62,6 +64,9 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 		selectAccountFromDBFlow = getSubFlow("selectAccountFromDB");
 		
+		deleteAccountFromSalesforce = getSubFlow("deleteAccountFromSalesforce");
+		deleteAccountFromSalesforce.initialise();
+
 		// prepare test data
 		account = createSalesforceAccount();
 		insertSalesforceAccount(account);
@@ -73,7 +78,11 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		// delete previously created account from DB by matching ID
 		final Map<String, Object> acc = new HashMap<String, Object>();
 		acc.put("Name", account.get("Name"));
+		acc.put("Id", account.get("Id"));
+
 		deleteAccountFromDB(acc);
+		deleteAccountFromSalesforce(acc);
+		
 		DBCREATOR.tearDownDataBase();
 	}
 
@@ -119,6 +128,14 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 			account.put("Id", item.getId());
 			account.put("LastModifiedDate", item.getPayload().getField("LastModifiedDate"));
 		}
+	}
+
+	private void deleteAccountFromSalesforce(final Map<String, Object> acc) throws Exception {
+
+		List<Object> idList = new ArrayList<Object>();
+		idList.add(acc.get("Id"));
+
+		deleteAccountFromSalesforce.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
 	}
 
 	private void deleteAccountFromDB(final Map<String, Object> account) throws Exception {
