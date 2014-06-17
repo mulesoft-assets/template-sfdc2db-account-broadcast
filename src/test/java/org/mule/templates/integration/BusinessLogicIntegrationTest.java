@@ -110,7 +110,6 @@ public class BusinessLogicIntegrationTest extends AbstractTemplateTestCase {
 		Assert.assertEquals("The account name should match", account.get("Id"), payload.get(0).get("salesforceId"));
 		Assert.assertEquals("The account name should match", account.get("Name"), payload.get(0).get("name"));
 		Assert.assertEquals("The account number should match", account.get("AccountNumber"), payload.get(0).get("accountNumber"));
-		Assert.assertEquals("The account phone should match", account.get("Phone"), payload.get(0).get("phone"));
 	}
 
 	@SuppressWarnings("unchecked")

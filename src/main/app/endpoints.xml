@@ -13,8 +13,9 @@ Here you should:
         <poll doc:name="Salesforce for accounts">
             <fixed-frequency-scheduler frequency="${poll.frequencyMillis}" startDelay="${poll.startDelayMillis}"/>
             <watermark variable="lastQueryDate" default-expression="${watermark.default.expression}" selector="MAX" selector-expression="#[payload.LastModifiedDate]"/>
-            <sfdc:query config-ref="Salesforce" query="dsql:SELECT Id, AccountNumber, AccountSource, AnnualRevenue, BillingCity, BillingCountry, BillingPostalCode, BillingState, BillingStreet, Description, Fax, Industry, LastModifiedDate, Name, NumberOfEmployees, OwnerId, Ownership, ParentId, Phone, Rating, ShippingCity, ShippingCountry, ShippingPostalCode, ShippingState, ShippingStreet, Sic, SicDesc, Site, TickerSymbol, Type, Website FROM Account WHERE LastModifiedDate &gt; #[lastQueryDate]" fetchSize="200" doc:name="Query Accounts with filtering criteria from Salesforce"/>
+            <sfdc:query config-ref="Salesforce" query="dsql:SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account WHERE LastModifiedDate &gt; #[lastQueryDate]" fetchSize="200" doc:name="Query Accounts with filtering criteria from Salesforce"/>
         </poll>
         <batch:execute name="syncAccountsBatch" doc:name="Trigger Batch execute for Upsert in database"/>
+        <exception-strategy ref="Choice_Exception_Strategy" doc:name="Reference Exception Strategy"/>
     </flow>
 </mule>

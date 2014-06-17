@@ -20,6 +20,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 
 
 
+
                     </db:select>
                 </enricher>
 
@@ -33,10 +34,9 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 AccountNumber = #[payload['AccountNumber']], 
 Description = #[payload['Description']],  
 NumberOfEmployees = #[payload['NumberOfEmployees']], 
-Phone = #[payload['Phone']], 
-Type = #[payload['Type']],	
 LastModifiedDate = CURRENT_TIMESTAMP
 WHERE Name = #[payload['Name']]]]></db:parameterized-query>
+
 
 
 
@@ -54,8 +54,6 @@ WHERE Name = #[payload['Name']]]]></db:parameterized-query>
 	Description,
 	Name,
 	NumberOfEmployees,
-	Phone,
-	Type,
 	SalesforceId,
 	LastModifiedById,
 	LastModifiedDate
@@ -64,12 +62,11 @@ WHERE Name = #[payload['Name']]]]></db:parameterized-query>
 	#[payload['Description']],
 	#[payload['Name']],
 	#[payload['NumberOfEmployees']],
-	#[payload['Phone']],
-	#[payload['Type']],
 	#[payload['Id']],
 	CURRENT_USER,
 	CURRENT_TIMESTAMP
 )]]></db:parameterized-query>
+
 
 
                     </db:insert>
