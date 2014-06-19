@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<configuration>
+	<placeholders>
+		<placeholder id="template_name">Salesforce to Database Account Broadcast</placeholder>
+	</placeholders>
+	<sections>
+		<section id="use_case">
+As a Salesforce admin I want to syncronize Accounts between Salesfoce and database.
+
+This Template should serve as a foundation for setting an online sync of Accounts from one SalesForce instance to database. Everytime there is a new Account or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the Account on the target database table.
+
+Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
+
+As implemented, this Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
+The batch job is divided in Input, Process and On Complete stages.
+The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest SalesForce updates/creations matching a filter criteria and executing the batch job.
+During the Process stage, each Salesforce Account will be filtered depending on, if it has an existing matching account in the database
+The last step of the Process stage will group the Accounts and insert/update them in database.
+Finally during the On Complete stage the Template will logoutput statistics data into the console.
+		</section>
+		<section id="considerations">
+<![CDATA[
+To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both source (Salesforce) and destination (Database) systems, that must be made in order for all to run smoothly. 
+**Failling to do so could lead to unexpected behavior of the template.**
+
+This particular Anypoint Template illustrate the broadcast use case between Salesforce and a Database, thus it requires a Database instance to work.
+The Anypoint Template comes packaged with a SQL script to create the Database table that uses. It is the user responsability to use that script to create the table in an available schema and change the configuration accordingly. The SQL script file can be found in [src/main/resources/account.sql] (../master/src/main/resources/account.sql)
+]]>
+		</section>
+		<section id="run_it">
+<![CDATA[
+See below.
+]]>
+		</section>
+		<section id="running_on_studio">
+<![CDATA[
+Once you have imported your Anypoint Template into Anypoint Studio you need to follow these steps to run it:
+
++ Locate the properties file `mule.dev.properties`, in src/main/resources
++ Complete all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
++ Add dependency for your Database driver to the pom.xml or simplt add external jar to the build path and rebuild project
++ Configure GenericDatabaseConnector in Global Elements section of the config flow to use your database specific driver. Classpath to the driver needs to be supplied here.
++ By default this template relies on existing table **"Account"** in the database of your choice, so it will perform sql statements against this table, but feel free to customize prepared statements to use different database table or columns.
++ Once that is done, right click on you Anypoint Template project folder 
++ Hover you mouse over `"Run as"`
++ Click on  `"Mule Application"`
+]]>
+		</section>
+		<section id="running_on_cloudhub">
+<![CDATA[
+While [creating your application on CloudHub](http://www.mulesoft.org/documentation/display/current/Hello+World+on+CloudHub) (Or you can do it later as a next step), you need to go to Deployment > Advanced to set all environment variables detailed in **Properties to be configured** as well as the **mule.env**. 
+Follow other steps defined [here](#runonpremise) and once your app is all set and started, there is no need to do anything else. Every time a Account is created or modified, it will be automatically synchronised to supplied database table.
+]]>
+		</section>
+		<section id="application_configuration">
+		<![CDATA[
+**Application configuration**
++ poll.frequencyMillis `60000`
++ poll.startDelayMillis `0`
++ watermark.default.expression `YESTERDAY`
+
+**Database Connector configuration**
++ database.url=jdbc:mysql://192.168.224.130:3306/mule?user=mule&password=mule
+
+If it is required to connect to a different Database there should be provided the jar for the library and changed the value of that field in the connector.
+
+**Salesforce Connector configuration**
++ sfdc.a.username `joan.baez@orgb`
++ sfdc.a.password `JoanBaez456`
++ sfdc.a.securityToken `ces56arl7apQs56XTddf34X`
++ sfdc.a.url `https://login.salesforce.com/services/Soap/u/26.0`
+]]>
+		</section>
+		<section id="api_calls">
+		<![CDATA[
+Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. Account Broadcast Template calls to the API can be calculated using the formula:
+
+***1 + X + X / 200***
+
+Being ***X*** the number of Accounts to be synchronized on each run. 
+
+The division by ***200*** is because, by default, Accounts are gathered in groups of 200 for each Upsert API Call in the commit step. Also consider that this calls are executed repeatedly every polling cycle.	
+
+For instance if 10 records are fetched from origin instance, then 12 api calls will be made (1 + 10 + 1).
+]]>
+		</section>
+		<section id="default_business_logic_xml">
+		<![CDATA[
+Functional aspect of the Template is implemented on this XML, directed by one flow that will poll for Salesforce creations/updates. The severeal message processors constitute four high level actions that fully implement the logic of this Template:
+
+1. During the Input stage the Template will go to the Salesforce and query all the existing Accounts that match the filter criteria.
+2. During the Process stage, each Salesforce Account will checked by name against Database, if it has an existing matching objects in database.
+3. The choice routing element will then decide whether to perform update on selected database columns or peform insert
+Finally during the On Complete stage the Template will logoutput statistics data into the console.
+]]>
+		</section>
+		<section id="default_endpoints_xml">
+		<![CDATA[
+This is file is conformed by a Flow containing the Poll that will periodically query Salesforce for updated/created Accounts that meet the defined criteria in the query. And then executing the batch job process with the query results.
+]]>
+		</section>
+	</sections>
+</configuration>
