@@ -32,7 +32,6 @@ import com.mulesoft.module.batch.BatchTestHelper;
  * for this Mule Template that make calls to external systems.
  */
 public class BusinessLogicIT extends AbstractTemplateTestCase {
-
 	protected static final int TIMEOUT = 60;
 	private static final Logger log = Logger.getLogger(BusinessLogicIT.class);
 	private static final String POLL_FLOW_NAME = "triggerFlow";
