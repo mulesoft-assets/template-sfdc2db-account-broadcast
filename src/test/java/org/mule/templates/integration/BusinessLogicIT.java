@@ -51,6 +51,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 	@BeforeClass
 	public static void init() {
+		System.setProperty("trigger.policy", "poll");
 		System.setProperty("page.size", "1000");
 		System.setProperty("poll.frequencyMillis", "10000");
 		System.setProperty("poll.startDelayMillis", "20000");
@@ -80,6 +81,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 	@After
 	public void tearDown() throws Exception {
 		stopFlowSchedulers(POLL_FLOW_NAME);
+		System.clearProperty("trigger.policy");
 		// delete previously created account from DB by matching ID
 		final Map<String, Object> acc = new HashMap<String, Object>();
 		acc.put("Name", account.get("Name"));

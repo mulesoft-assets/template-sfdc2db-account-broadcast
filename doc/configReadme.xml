@@ -5,18 +5,23 @@
 	</placeholders>
 	<sections>
 		<section id="use_case">
-As a Salesforce admin I want to syncronize Accounts between Salesfoce and database.
+As a Salesforce admin I want to synchronize Accounts between Salesfoce and database.
 
 This Template should serve as a foundation for setting an online sync of Accounts from one SalesForce instance to database. Everytime there is a new Account or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the Account on the target database table.
 
 Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 
-As implemented, this Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
+As implemented, this Anypoint Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing) and [Outbound messaging](https://www.salesforce.com/us/developer/docs/api/Content/sforce_api_om_outboundmessaging.htm)
 The batch job is divided in Input, Process and On Complete stages.
 The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest SalesForce updates/creations matching a filter criteria and executing the batch job.
 During the Process stage, each Salesforce Account will be filtered depending on, if it has an existing matching account in the database
 The last step of the Process stage will group the Accounts and insert/update them in database.
-Finally during the On Complete stage the Template will logoutput statistics data into the console.
+Finally during the On Complete stage the Template will log output statistics data into the console.
+
+The integration could be also triggered by http inbound connector defined in the flow that is going to trigger the application and executing the batch job with received message from Salesforce source instance.
+Outbound messaging in Salesforce allows you to specify that changes to fields within Salesforce can cause messages with field values to be sent to designated external servers.
+Outbound messaging is part of the workflow rule functionality in Salesforce. Workflow rules watch for specific kinds of field changes and trigger automatic Salesforce actions in this case sending accounts as an outbound message to Mule Http inbound connector,
+which will then further process this message and creates Accounts in a database.
 		</section>
 		<section id="considerations">
 <![CDATA[
@@ -50,6 +55,10 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 <![CDATA[
 While [creating your application on CloudHub](http://www.mulesoft.org/documentation/display/current/Hello+World+on+CloudHub) (Or you can do it later as a next step), you need to go to Deployment > Advanced to set all environment variables detailed in **Properties to be configured** as well as the **mule.env**. 
 Follow other steps defined [here](#runonpremise) and once your app is all set and started, there is no need to do anything else. Every time a Account is created or modified, it will be automatically synchronised to supplied database table.
+
+Once your app is all set and started and switched for outbound messaging processing, you will need to define Salesforce outbound messaging and a simple workflow rule. [This article will show you how to accomplish this](https://www.salesforce.com/us/developer/docs/api/Content/sforce_api_om_outboundmessaging_setting_up.htm)
+The most important setting here is the `Endpoint URL` which needs to point to your application running on Cloudbhub, eg. `http://yourapp.cloudhub.io:80`. Additionaly, try to add just few fields to the `Fields to Send` to keep it simple for begin.
+Once this all is done every time when you will make a change on Account in source Salesforce org. This account will be sent as a SOAP message to the Http endpoint of running application in Cloudhub.
 ]]>
 		</section>
 		<section id="application_configuration">
@@ -58,6 +67,10 @@ Follow other steps defined [here](#runonpremise) and once your app is all set an
 + poll.frequencyMillis `60000`
 + poll.startDelayMillis `0`
 + watermark.default.expression `YESTERDAY`
+
+**Trigger policy(push, poll)**
++ trigger.policy `poll`
+This property define, which policy should be used for synchronization. When the push policy is selected, the http inbound connector is used for Salesforce's outbound messaging and polling mechanism is ignored.
 
 **Database Connector configuration**
 + database.url=jdbc:mysql://192.168.224.130:3306/mule?user=mule&password=mule
@@ -96,7 +109,7 @@ Finally during the On Complete stage the Template will logoutput statistics data
 		</section>
 		<section id="default_endpoints_xml">
 		<![CDATA[
-This is file is conformed by a Flow containing the Poll that will periodically query Salesforce for updated/created Accounts that meet the defined criteria in the query. And then executing the batch job process with the query results.
+This is file is conformed by a Flow containing the Poll that will periodically query Salesforce for updated/created Accounts that meet the defined criteria in the query and HTTP connector, which is listening for Saleforce's outbound messages. And then executing the batch job process with the query results.
 ]]>
 		</section>
 	</sections>
