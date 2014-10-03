@@ -4,6 +4,8 @@
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
 + [Considerations](#considerations)
+	* [DB Considerations](#dbconsiderations)
+	* [Salesforce Considerations](#salesforceconsiderations)
 + [Run it!](#runit)
 	* [Running on premise](#runonopremise)
 	* [Running on Studio](#runonstudio)
@@ -39,12 +41,67 @@ Finally during the On Complete stage the Template will logoutput statistics data
 
 # Considerations <a name="considerations"/>
 
-
 To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both source (Salesforce) and destination (Database) systems, that must be made in order for all to run smoothly. 
 **Failling to do so could lead to unexpected behavior of the template.**
 
 This particular Anypoint Template illustrate the broadcast use case between Salesforce and a Database, thus it requires a Database instance to work.
 The Anypoint Template comes packaged with a SQL script to create the Database table that uses. It is the user responsability to use that script to create the table in an available schema and change the configuration accordingly. The SQL script file can be found in [src/main/resources/account.sql] (../master/src/main/resources/account.sql)
+
+## DB Considerations <a name="dbconsiderations"/>
+
+There may be a few things that you need to know regarding DB, in order for this template to work.
+
+This Anypoint Template may be using date time/timestamp fields from the DB in order to do comparisons and take further actions.
+While the template handles the time zone by sending all such fields in a neutral time zone, it can not handle **time offsets**.
+We define as **time offsets** the time difference that may surface between date time/timestamp fields from different systems due to a differences in the system's internal clock.
+The user of this template should take this in consideration and take the actions needed to avoid the time offset.
+
+
+### DB as destination of data
+
+There are no particular considerations for this Anypoint Template regarding DB as data destination.
+
+## Salesforce Considerations <a name="salesforceconsiderations"/>
+
+There may be a few things that you need to know regarding Salesforce, in order for this template to work.
+
+In order to have this template working as expected, you should be aware of your own Salesforce field configuration.
+
+###FAQ
+
+ - Where can I check that the field configuration for my Salesforce instance is the right one?
+
+    [Salesforce: Checking Field Accessibility for a Particular Field][1]
+
+- Can I modify the Field Access Settings? How?
+
+    [Salesforce: Modifying Field Access Settings][2]
+
+
+[1]: https://help.salesforce.com/HTViewHelpDoc?id=checking_field_accessibility_for_a_particular_field.htm&language=en_US
+[2]: https://help.salesforce.com/HTViewHelpDoc?id=modifying_field_access_settings.htm&language=en_US
+
+### As source of data
+
+If the user configured in the template for the source system does not have at least *read only* permissions for the fields that are fetched, then a *InvalidFieldFault* API fault will show up.
+
+```
+java.lang.RuntimeException: [InvalidFieldFault [ApiQueryFault [ApiFault  exceptionCode='INVALID_FIELD'
+exceptionMessage='
+Account.Phone, Account.Rating, Account.RecordTypeId, Account.ShippingCity
+^
+ERROR at Row:1:Column:486
+No such column 'RecordTypeId' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.'
+]
+row='1'
+column='486'
+]
+]
+```
+
+
+
+
 
 # Run it! <a name="runit"/>
 Simple steps to get Salesforce to Database Account Broadcast running.
@@ -143,7 +200,7 @@ Of course more files will be found such as Test Classes and [Mule Application Fi
 Here is a list of the main XML files you'll find in this application:
 
 * [config.xml](#configxml)
-* [inboundEndpoints.xml](#inboundendpointsxml)
+* [endpoints.xml](#endpointsxml)
 * [businessLogic.xml](#businesslogicxml)
 * [errorHandling.xml](#errorhandlingxml)
 
