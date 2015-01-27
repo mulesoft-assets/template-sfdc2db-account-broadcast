@@ -6,7 +6,7 @@ xmlns="http://www.mulesoft.org/schema/mule/core"
 xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
 xmlns:spring="http://www.springframework.org/schema/beans" 
 xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
-version="EE-3.5.0" 
+version="EE-3.5.2" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -28,7 +28,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		doc:description="Include jar for your database and supply correct url pointing to your database eg" />
 
     <db:template-query name="QueryAccount" doc:name="Template Query">
-        <db:parameterized-query><![CDATA[select AccountNumber, Name, Description, NumberOfEmployees, Phone, Type, SalesforceId from Account where Name = :paramName]]></db:parameterized-query>
+        <db:parameterized-query><![CDATA[select AccountNumber, Name, Description, NumberOfEmployees, Industry, Phone, Type, SalesforceId from Account where Name = :paramName]]></db:parameterized-query>
         <db:in-param name="paramId" defaultValue=" "/>
 
     </db:template-query>
@@ -37,10 +37,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 accountNumber = :accountNumber, 
 description = :description,
 numberOfEmployees = :numberOfEmployees,
+industry = :industry,
 phone = :phone,
 type = :type,
 salesforceId = :salesforceId
 WHERE name = :name]]></db:parameterized-query>
+        <db:in-param name="industry" defaultValue=" "/>
         <db:in-param name="accountNumber" defaultValue=" "/>
         <db:in-param name="description" defaultValue=" "/>
         <db:in-param name="numberOfEmployees" defaultValue=" "/>
@@ -51,8 +53,9 @@ WHERE name = :name]]></db:parameterized-query>
 
     </db:template-query>
     <db:template-query name="InsertAccount" doc:name="Template Query">
-        <db:parameterized-query><![CDATA[INSERT INTO Account (accountNumber, description, numberOfEmployees, phone, typesalesforceId, name)
-VALUES (:accountNumber, :description, :numberOfEmployees, :phone, :type, :salesforceId, :name)]]></db:parameterized-query>
+        <db:parameterized-query><![CDATA[INSERT INTO Account (accountNumber, description, numberOfEmployees, industry, phone, typesalesforceId, name)
+VALUES (:accountNumber, :description, :numberOfEmployees, :industry, :phone, :type, :salesforceId, :name)]]></db:parameterized-query>
+        <db:in-param name="industry" defaultValue=" "/>
         <db:in-param name="accountNumber" defaultValue=" "/>
         <db:in-param name="description" defaultValue=" "/>
         <db:in-param name="numberOfEmployees" defaultValue=" "/>

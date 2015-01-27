@@ -11,6 +11,7 @@ http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfd
                 <sfdc:object>
                     <sfdc:inner-object key="AccountNumber">#[payload.AccountNumber]</sfdc:inner-object>
                     <sfdc:inner-object key="Phone">#[payload.Phone]</sfdc:inner-object>
+                    <sfdc:inner-object key="Industry">#[payload.Industry]</sfdc:inner-object>
                     <sfdc:inner-object key="Name">#[payload.Name]</sfdc:inner-object>
                 </sfdc:object>
 	        </sfdc:objects> 

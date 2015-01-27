@@ -38,6 +38,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 	private static final String ACCOUNT_NAME = "Account Test Name";
 	private static final String ACCOUNT_NUMBER = "123456789";
 	private static final String ACCOUNT_PHONE = "+421";
+	private static final String ACCOUNT_INDUSTRY = "Apparel";
 	
 	private BatchTestHelper helper;
 	private Map<String, Object> account;
@@ -117,6 +118,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		Assert.assertEquals("The account name should match", account.get("Id"), payload.get(0).get("salesforceId"));
 		Assert.assertEquals("The account name should match", account.get("Name"), payload.get(0).get("name"));
 		Assert.assertEquals("The account number should match", account.get("AccountNumber"), payload.get(0).get("accountNumber"));
+		Assert.assertEquals("The account industry should match", account.get("Industry"), payload.get(0).get("industry"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -157,6 +159,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		final Map<String, Object> account = builder
 				.with("Name", ACCOUNT_NAME + System.currentTimeMillis())
 				.with("AccountNumber", ACCOUNT_NUMBER)
+				.with("Industry", ACCOUNT_INDUSTRY)
 				.with("Phone", ACCOUNT_PHONE).build();
 		
 		return account;
