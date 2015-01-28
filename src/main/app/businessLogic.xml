@@ -26,7 +26,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 
 
             </batch:step>
-            <batch:step name="updateAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() == 0]">
+            <batch:step name="updateAccountInDatabaseStep" accept-expression="#[recordVars['account'].size() &gt; 0]">
                 <data-mapper:transform config-ref="Account_To_Account" doc:name="Account To Account"/>
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:update config-ref="GenericDatabaseConnector" doc:name="update account in database" bulkMode="true">
@@ -45,7 +45,7 @@ WHERE Name = #[payload['Name']]]]></db:parameterized-query>
                     <logger message="#[payload]" level="INFO" doc:name="log response"/>
                 </batch:commit>
             </batch:step>
-            <batch:step name="insertAccountInDatabaseStep" filter-expression="#[recordVars['account'].size() &gt; 0]">
+            <batch:step name="insertAccountInDatabaseStep" accept-expression="#[recordVars['account'].size() == 0]">
                 <data-mapper:transform config-ref="Account_To_Account_1" doc:name="Account To Account"/>
 
                 <batch:commit size="100" doc:name="Batch Commit">
