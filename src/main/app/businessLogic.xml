@@ -8,7 +8,6 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
     <data-mapper:config name="Account_To_Account" transformationGraphPath="account_to_account.grf" doc:name="Account_To_Account"/>
-    <data-mapper:config name="Account_To_Account_1" transformationGraphPath="account_to_account_1.grf" doc:name="Account_To_Account_1"/>
     <batch:job name="syncAccountsBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:process-records>
@@ -26,8 +25,10 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 
 
             </batch:step>
-            <batch:step name="updateAccountInDatabaseStep" accept-expression="#[recordVars['account'].size() &gt; 0]">
+            <batch:step name="mapSfdcAccountToDbAccountStep">
                 <data-mapper:transform config-ref="Account_To_Account" doc:name="Account To Account"/>
+            </batch:step>
+            <batch:step name="updateAccountInDatabaseStep" accept-expression="#[recordVars['account'].size() &gt; 0]">
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:update config-ref="GenericDatabaseConnector" doc:name="update account in database" bulkMode="true">
                         <db:parameterized-query><![CDATA[UPDATE Account SET
@@ -46,7 +47,6 @@ WHERE Name = #[payload['Name']]]]></db:parameterized-query>
                 </batch:commit>
             </batch:step>
             <batch:step name="insertAccountInDatabaseStep" accept-expression="#[recordVars['account'].size() == 0]">
-                <data-mapper:transform config-ref="Account_To_Account_1" doc:name="Account To Account"/>
 
                 <batch:commit size="100" doc:name="Batch Commit">
                     <db:insert config-ref="GenericDatabaseConnector" doc:name="insert account in database" bulkMode="true">
