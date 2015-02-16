@@ -174,20 +174,24 @@ Mule Studio provides you with really easy way to deploy your Template directly t
 In order to use this Mule Anypoint Template you need to configure properties (Credentials, configurations, etc.) either in properties file or in CloudHub as Environment Variables. Detail list with examples:
 ### Application configuration
 **Application configuration**
+
 + poll.frequencyMillis `60000`
 + poll.startDelayMillis `0`
 + watermark.default.expression `YESTERDAY`
 
 **Trigger policy(push, poll)**
+
 + trigger.policy `poll`
 This property define, which policy should be used for synchronization. When the push policy is selected, the http inbound connector is used for Salesforce's outbound messaging and polling mechanism is ignored.
 
 **Database Connector configuration**
+
 + database.url=jdbc:mysql://192.168.224.130:3306/mule?user=mule&password=mule
 
 If it is required to connect to a different Database there should be provided the jar for the library and changed the value of that field in the connector.
 
 **Salesforce Connector configuration**
+
 + sfdc.a.username `joan.baez@orgb`
 + sfdc.a.password `JoanBaez456`
 + sfdc.a.securityToken `ces56arl7apQs56XTddf34X`
@@ -230,7 +234,7 @@ Functional aspect of the Template is implemented on this XML, directed by one fl
 1. During the Input stage the Template will go to the Salesforce and query all the existing Accounts that match the filter criteria.
 2. During the Process stage, each Salesforce Account will checked by name against Database, if it has an existing matching objects in database.
 3. The choice routing element will then decide whether to perform update on selected database columns or peform insert
-Finally during the On Complete stage the Template will logoutput statistics data into the console.
+4. Finally during the On Complete stage the Template will logoutput statistics data into the console.
 
 
 
