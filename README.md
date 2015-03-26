@@ -108,12 +108,13 @@ column='486'
 
 
 
+
 # Run it! <a name="runit"/>
 Simple steps to get Salesforce to Database Account Broadcast running.
 See below.
 
 ## Running on premise <a name="runonopremise"/>
-In this section we detail the way you have to run you Anypoint Temple on you computer.
+In this section we detail the way you should run your Anypoint Template on your computer.
 
 
 ### Where to Download Mule Studio and Mule ESB
@@ -154,7 +155,7 @@ Once you have imported your Anypoint Template into Anypoint Studio you need to f
 + Click on  `"Mule Application"`
 
 ### Running on Mule ESB stand alone <a name="runonmuleesbstandalone"/>
-Complete all properties in one of the property files, for example in [mule.prod.properties] (../blob/master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`. 
+Complete all properties in one of the property files, for example in [mule.prod.properties] (../master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`. 
 
 
 ## Running on CloudHub <a name="runoncloudhub"/>
@@ -244,7 +245,8 @@ This is file is conformed by a Flow containing the Poll that will periodically q
 
 
 ## errorHandling.xml<a name="errorhandlingxml"/>
-Contains a [Catch Exception Strategy](http://www.mulesoft.org/documentation/display/current/Catch+Exception+Strategy) that is only Logging the exception thrown (If so). As you imagine, this is the right place to handle how your integration will react depending on the different exceptions.
+This is the right place to handle how your integration will react depending on the different exceptions. 
+This file holds a [Choice Exception Strategy](http://www.mulesoft.org/documentation/display/current/Choice+Exception+Strategy) that is referenced by the main flow in the business logic.
 
 
 
