@@ -5,23 +5,23 @@
 	</placeholders>
 	<sections>
 		<section id="use_case">
-As a Salesforce admin I want to synchronize Accounts between Salesfoce and database.
+As a Salesforce admin I want to synchronize Accounts from Salesforce to database.
 
-This Template should serve as a foundation for setting an online sync of Accounts from one SalesForce instance to database. Everytime there is a new Account or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the Account on the target database table.
+This Template should serve as a foundation for setting an online sync of Accounts from one Salesforce instance to database. Everytime there is a new Account or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the Account on the target database table.
 
 Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 
 As implemented, this Anypoint Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing) and [Outbound messaging](https://www.salesforce.com/us/developer/docs/api/Content/sforce_api_om_outboundmessaging.htm)
-The batch job is divided in Input, Process and On Complete stages.
+The batch job is divided into Input, Process and On Complete stages.
 The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest SalesForce updates/creations matching a filter criteria and executing the batch job.
 During the Process stage, each Salesforce Account will be filtered depending on, if it has an existing matching account in the database
 The last step of the Process stage will group the Accounts and insert/update them in database.
 Finally during the On Complete stage the Template will log output statistics data into the console.
 
-The integration could be also triggered by http inbound connector defined in the flow that is going to trigger the application and executing the batch job with received message from Salesforce source instance.
+The integration could be also triggered by HTTP inbound connector defined in the flow that is going to trigger the application and executing the batch job with received message from Salesforce source instance.
 Outbound messaging in Salesforce allows you to specify that changes to fields within Salesforce can cause messages with field values to be sent to designated external servers.
-Outbound messaging is part of the workflow rule functionality in Salesforce. Workflow rules watch for specific kinds of field changes and trigger automatic Salesforce actions in this case sending accounts as an outbound message to Mule Http inbound connector,
-which will then further process this message and creates Accounts in a database.
+Outbound messaging is part of the workflow rule functionality in Salesforce. Workflow rules watch for specific kinds of field changes and trigger automatic Salesforce actions. In this case sending accounts as an outbound message to Mule Http inbound connector,
+which will then further process this message and create Accounts in a database.
 		</section>
 		<section id="considerations">
 <![CDATA[
@@ -42,8 +42,8 @@ See below.
 Once you have imported your Anypoint Template into Anypoint Studio you need to follow these steps to run it:
 
 + Locate the properties file `mule.dev.properties`, in src/main/resources
-+ Complete all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
-+ Add dependency for your Database driver to the pom.xml or simplt add external jar to the build path and rebuild project
++ Fill out all the properties required as per the examples in the section [Properties to be configured](#propertiestobeconfigured)
++ Add dependency for your Database driver to the pom.xml or simply add external jar to the build path and rebuild project
 + Configure GenericDatabaseConnector in Global Elements section of the config flow to use your database specific driver. Classpath to the driver needs to be supplied here.
 + By default this template relies on existing table **"Account"** in the database of your choice, so it will perform sql statements against this table, but feel free to customize prepared statements to use different database table or columns.
 + Once that is done, right click on you Anypoint Template project folder 
@@ -85,7 +85,7 @@ If it is required to connect to a different Database there should be provided th
 + sfdc.a.username `joan.baez@orgb`
 + sfdc.a.password `JoanBaez456`
 + sfdc.a.securityToken `ces56arl7apQs56XTddf34X`
-+ sfdc.a.url `https://login.salesforce.com/services/Soap/u/26.0`
++ sfdc.a.url `https://login.salesforce.com/services/Soap/u/32.0`
 ]]>
 		</section>
 		<section id="api_calls">
@@ -105,15 +105,15 @@ For instance if 10 records are fetched from origin instance, then 12 api calls w
 		<![CDATA[
 Functional aspect of the Template is implemented on this XML, directed by one flow that will poll for Salesforce creations/updates. The severeal message processors constitute four high level actions that fully implement the logic of this Template:
 
-1. During the Input stage the Template will go to the Salesforce and query all the existing Accounts that match the filter criteria.
-2. During the Process stage, each Salesforce Account will checked by name against Database, if it has an existing matching objects in database.
-3. The choice routing element will then decide whether to perform update on selected database columns or peform insert
-4. Finally during the On Complete stage the Template will logoutput statistics data into the console.
+1. During the Input stage the Template will query Salesforce for all the existing Accounts that match the filtering criteria.
+2. During the Process stage, each Salesforce Account will be checked by name against the Database, if it has an existing matching objects in database.
+3. The choice routing element will then decide whether to perform update operation on selected database columns or to perform insert operation
+4. Finally during the On Complete stage the Template will log output statistics data into the console.
 ]]>
 		</section>
 		<section id="default_endpoints_xml">
 		<![CDATA[
-This is file is conformed by a Flow containing the Poll that will periodically query Salesforce for updated/created Accounts that meet the defined criteria in the query and HTTP connector, which is listening for Saleforce's outbound messages. And then executing the batch job process with the query results.
+This is file is conformed by a flow containing the Poll that will periodically query Salesforce for updated/created Accounts that meet the defined criteria in the query and HTTP connector, which is listening for Saleforce's outbound messages. And then executing the batch job process with the query results.
 ]]>
 		</section>
 	</sections>

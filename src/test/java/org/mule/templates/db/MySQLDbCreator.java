@@ -19,7 +19,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 public class MySQLDbCreator {
-	private static final Logger log = Logger.getLogger(MySQLDbCreator.class);
+	private static final Logger LOG = Logger.getLogger(MySQLDbCreator.class);
 	private String databaseName;
 	private String databaseUrl;
 	private String databaseWithNameUrl;
@@ -30,7 +30,7 @@ public class MySQLDbCreator {
 		try {
 			props.load(new FileInputStream(pathToProperties));
 		} catch (Exception e) {
-			log.error("Error occured while reading mule.test.properties", e);
+			LOG.error("Error occured while reading mule.test.properties", e);
 		}
 		final String user = props.getProperty("database.user");
 		final String password = props.getProperty("database.password");
@@ -48,7 +48,7 @@ public class MySQLDbCreator {
 	
 	public void setUpDatabase() {
 		
-		System.out.println("******************************** Populate MySQL DB **************************");
+		LOG.info("******************************** Populate MySQL DB **************************");
 		Connection conn = null;
 		
 		try {
@@ -76,20 +76,20 @@ public class MySQLDbCreator {
 			stmt.addBatch(createStatement.toString());
 			in.close();
 			stmt.executeBatch();
-			System.out.println("Success");
+			LOG.info("Success");
 			
 		} catch (SQLException ex) {
 		    // handle any errors
-		    log.error("SQLException: " + ex.getMessage());
-		    log.error("SQLState: " + ex.getSQLState());
-		    log.error("VendorError: " + ex.getErrorCode());
+		    LOG.error("SQLException: " + ex.getMessage());
+		    LOG.error("SQLState: " + ex.getSQLState());
+		    LOG.error("VendorError: " + ex.getErrorCode());
 		} catch (Exception except) {
 			except.printStackTrace();
 		}
 	}
 	
 	public void tearDownDataBase() {
-		System.out.println("******************************** Delete Tables from MySQL DB **************************");
+		LOG.info("******************************** Delete Tables from MySQL DB **************************");
 		Connection conn = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();

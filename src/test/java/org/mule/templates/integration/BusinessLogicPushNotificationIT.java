@@ -6,25 +6,24 @@
 
 package org.mule.templates.integration;
 
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mule.DefaultMuleMessage;
 import org.mule.MessageExchangePattern;
 import org.mule.api.MuleEvent;
-import org.mule.api.MuleMessage;
 import org.mule.construct.Flow;
 import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.templates.db.MySQLDbCreator;
+import org.mule.transformer.types.DataTypeFactory;
 
 import com.mulesoft.module.batch.BatchTestHelper;
 
@@ -37,16 +36,16 @@ import com.mulesoft.module.batch.BatchTestHelper;
 @SuppressWarnings("unchecked")
 public class BusinessLogicPushNotificationIT extends AbstractTemplateTestCase {
 	
-	private static final int TIMEOUT_MILLIS = 60;
-	private BatchTestHelper helper;
-	private Flow triggerPushFlow;
-	private SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow;
-	
 	private static final String PATH_TO_TEST_PROPERTIES = "./src/test/resources/mule.test.properties";
 	private static final String PATH_TO_SQL_SCRIPT = "src/main/resources/account.sql";
 	private static final String DATABASE_NAME = "SFDC2DBAccountBroadcast" + new Long(new Date().getTime()).toString();
 	private static final MySQLDbCreator DBCREATOR = new MySQLDbCreator(DATABASE_NAME, PATH_TO_SQL_SCRIPT, PATH_TO_TEST_PROPERTIES);
+	private static final int TIMEOUT_MILLIS = 60;
 	
+	private BatchTestHelper helper;
+	private Flow triggerPushFlow;
+	private SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow;
+
 	@BeforeClass
 	public static void beforeClass() {
 		DBCREATOR.setUpDatabase();
@@ -85,8 +84,9 @@ public class BusinessLogicPushNotificationIT extends AbstractTemplateTestCase {
 		String accountName = buildUniqueName();
 		HashMap<String, Object> account = new HashMap<String, Object>();
 		account.put("Name", accountName);
-		MuleMessage message = new DefaultMuleMessage(buildRequest(accountName), muleContext);
-		MuleEvent testEvent = getTestEvent(message, MessageExchangePattern.REQUEST_RESPONSE);
+				
+		final MuleEvent testEvent = getTestEvent(null, triggerPushFlow);
+		testEvent.getMessage().setPayload(buildRequest(accountName), DataTypeFactory.create(InputStream.class, "application/xml"));
 		triggerPushFlow.process(testEvent);
 		
 		helper.awaitJobTermination(TIMEOUT_MILLIS * 1000, 500);
