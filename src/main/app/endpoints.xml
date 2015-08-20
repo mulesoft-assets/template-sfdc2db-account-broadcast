@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.6.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+<mule version="EE-3.7.1" 
+	xmlns:email="http://www.mulesoft.org/schema/mule/email" 
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" 
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" 
+	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:core="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
-    <data-mapper:config name="XML_To_Account" transformationGraphPath="xml_to_account.grf" doc:name="XML_To_Account"/>
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+
     <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="${http.port}" doc:name="HTTP Listener Configuration"/>
     <flow name="triggerPushFlow"  initialState="started">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
 
         <choice doc:name="Trigger Policy">
             <when expression="#['push' == '${trigger.policy}']">
-                <object-to-string-transformer doc:name="Object to String"/>
+
                 <logger message="Message from outbound : #[payload]" level="INFO" doc:name="Log input payload"/>
-                <data-mapper:transform config-ref="XML_To_Account" doc:name="XML To Account"/>
+                <dw:transform-message doc:name="XML to Account">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload.Envelope.Body.notifications.Notification.*sObject]]></dw:set-payload>
+                </dw:transform-message>
+
                 <batch:execute name="syncAccountsBatch" doc:name="Trigger Batch execute for Upsert in database"/>
             </when>
             <otherwise>
@@ -26,7 +45,7 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
         <set-payload value="&lt;soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:out='http://soap.sforce.com/2005/09/outbound'&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;out:notificationsResponse&gt;&lt;out:Ack&gt;true&lt;/out:Ack&gt;&lt;/out:notificationsResponse&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;" doc:name="set response body"/>
 
     </flow>
-    <flow name="triggerFlow"  processingStrategy="synchronous" doc:description="This is the simpliest entry point to start the excecution of your Template
+     <flow name="triggerFlow"  processingStrategy="synchronous" doc:description="This is the simpliest entry point to start the excecution of your Template 
 Here you should: 
 	* Configure the inbound endpoint, in this case a polling to fetch data from origin system
 	* Handle any input parameter and set the scope of it so the main logic does not care from where it is called">
@@ -35,7 +54,7 @@ Here you should:
             <watermark variable="lastQueryDate" default-expression="${watermark.default.expression}" selector="MAX" selector-expression="#[payload.LastModifiedDate]"/>
             <sfdc:query config-ref="Salesforce" query="dsql:SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account WHERE LastModifiedDate &gt; #[lastQueryDate]" fetchSize="200" doc:name="Query Accounts with filtering criteria from Salesforce"/>
         </poll>
-        <choice doc:name="Choice">
+        <choice doc:name="Trigger Policy">
             <when expression="#['poll' == '${trigger.policy}']">
                 <batch:execute name="syncAccountsBatch" doc:name="Trigger Batch execute for Upsert in database"/>
             </when>

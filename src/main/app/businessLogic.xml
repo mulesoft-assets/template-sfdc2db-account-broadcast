@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.6.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+<mule version="EE-3.7.1" 
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" 
+	xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" 
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" 
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" 
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
-http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
-    <data-mapper:config name="Account_To_Account" transformationGraphPath="account_to_account.grf" doc:name="Account_To_Account"/>
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+
     <batch:job name="syncAccountsBatch">
         <batch:threading-profile poolExhaustedAction="WAIT"/>
         <batch:process-records>
@@ -20,35 +32,50 @@ http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schem
 
 
 
+
                     </db:select>
                 </enricher>
 
 
             </batch:step>
             <batch:step name="mapSfdcAccountToDbAccountStep">
-                <data-mapper:transform config-ref="Account_To_Account" doc:name="Account To Account"/>
+                <dw:transform-message doc:name="Account To Account">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	Id 					: payload.Id,
+	Name 				: payload.Name,
+	AccountNumber 		: payload.AccountNumber,
+	Description 		: payload.Description,
+	NumberOfEmployees 	: payload.NumberOfEmployees,
+	Industry 			: payload.Industry
+}]]></dw:set-payload>
+                </dw:transform-message>
+
             </batch:step>
-            <batch:step name="updateAccountInDatabaseStep" accept-expression="#[recordVars['account'].size() &gt; 0]">
-                <batch:commit size="100" doc:name="Batch Commit">
+            <batch:step name="updateAccountInDatabaseStep" accept-expression="#[recordVars.account.size() &gt; 0]">
+                <batch:commit size="200" doc:name="Batch Commit">
                     <db:update config-ref="GenericDatabaseConnector" doc:name="update account in database" bulkMode="true">
                         <db:parameterized-query><![CDATA[UPDATE Account SET
-AccountNumber = #[payload['AccountNumber']], 
-Description = #[payload['Description']],  
-NumberOfEmployees = #[payload['NumberOfEmployees']],
-Industry = #[payload['Industry']], 
+AccountNumber = #[payload.AccountNumber], 
+Description = #[payload.Description],  
+NumberOfEmployees = #[payload.NumberOfEmployees],
+Industry = #[payload.Industry], 
 LastModifiedDate = CURRENT_TIMESTAMP
-WHERE Name = #[payload['Name']]]]></db:parameterized-query>
+WHERE Name = #[payload.Name]]]></db:parameterized-query>
+
 
 
 
 
                     </db:update>
-                    <logger message="#[payload]" level="INFO" doc:name="log response"/>
+                    <logger message="Update response: #[payload]" level="INFO" doc:name="log response"/>
                 </batch:commit>
             </batch:step>
-            <batch:step name="insertAccountInDatabaseStep" accept-expression="#[recordVars['account'].size() == 0]">
+            <batch:step name="insertAccountInDatabaseStep" accept-expression="#[recordVars.account.size() == 0]">
 
-                <batch:commit size="100" doc:name="Batch Commit">
+                <batch:commit size="200" doc:name="Batch Commit">
                     <db:insert config-ref="GenericDatabaseConnector" doc:name="insert account in database" bulkMode="true">
                         <db:parameterized-query><![CDATA[INSERT INTO Account (
 	AccountNumber,
@@ -60,20 +87,21 @@ WHERE Name = #[payload['Name']]]]></db:parameterized-query>
 	LastModifiedById,
 	LastModifiedDate
 ) VALUES (
-	#[payload['AccountNumber']],
-	#[payload['Description']],
-	#[payload['Name']],
-	#[payload['NumberOfEmployees']],
-	#[payload['Industry']],
-	#[payload['Id']],
+	#[payload.AccountNumber],
+	#[payload.Description],
+	#[payload.Name],
+	#[payload.NumberOfEmployees],
+	#[payload.Industry],
+	#[payload.Id],
 	CURRENT_USER,
 	CURRENT_TIMESTAMP
 )]]></db:parameterized-query>
 
 
 
+
                     </db:insert>
-                    <logger message="44444 #[payload]" level="INFO" doc:name="log response"/>
+                    <logger message="Insert response: #[payload]" level="INFO" doc:name="log response"/>
                 </batch:commit>
             </batch:step>
         </batch:process-records>

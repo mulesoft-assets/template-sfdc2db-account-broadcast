@@ -33,22 +33,22 @@ import com.mulesoft.module.batch.BatchTestHelper;
  */
 public class BusinessLogicIT extends AbstractTemplateTestCase {
 	protected static final int TIMEOUT = 60;
-	private static final Logger log = Logger.getLogger(BusinessLogicIT.class);
+	private static final Logger LOG = Logger.getLogger(BusinessLogicIT.class);
 	private static final String POLL_FLOW_NAME = "triggerFlow";
 	private static final String ACCOUNT_NAME = "Account Test Name";
 	private static final String ACCOUNT_NUMBER = "123456789";
 	private static final String ACCOUNT_PHONE = "+421";
 	private static final String ACCOUNT_INDUSTRY = "Apparel";
 	
-	private BatchTestHelper helper;
-	private Map<String, Object> account;
-	private SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow;
-	private SubflowInterceptingChainLifecycleWrapper deleteAccountFromSalesforce;
-	
 	private static final String PATH_TO_TEST_PROPERTIES = "./src/test/resources/mule.test.properties";
 	private static final String PATH_TO_SQL_SCRIPT = "src/main/resources/account.sql";
 	private static final String DATABASE_NAME = "SFDC2DBAccountBroadcast" + new Long(new Date().getTime()).toString();
 	private static final MySQLDbCreator DBCREATOR = new MySQLDbCreator(DATABASE_NAME, PATH_TO_SQL_SCRIPT, PATH_TO_TEST_PROPERTIES);
+
+	private BatchTestHelper helper;
+	private Map<String, Object> account;
+	private SubflowInterceptingChainLifecycleWrapper selectAccountFromDBFlow;
+	private SubflowInterceptingChainLifecycleWrapper deleteAccountFromSalesforce;
 
 	@BeforeClass
 	public static void init() {
@@ -110,7 +110,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 		// print result
 		for (Map<String, Object> acc : payload){
-			log.info("selectAccountFromDB response: " + acc);
+			LOG.info("selectAccountFromDB response: " + acc);
 		}
 
 		// Account previously created in Salesforce should be present in database
@@ -131,7 +131,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 		// store Id into our account
 		for (EnrichedUpsertResult item : result) {
-			log.info("response from insertSalesforceAccountSubFlow: " + item);
+			LOG.info("response from insertSalesforceAccountSubFlow: " + item);
 			account.put("Id", item.getId());
 			account.put("LastModifiedDate", item.getPayload().getField("LastModifiedDate"));
 		}
@@ -151,7 +151,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 
 		final MuleEvent event = flow.process(getTestEvent(account, MessageExchangePattern.REQUEST_RESPONSE));
 		final Object result = event.getMessage().getPayload();
-		log.info("deleteAccountFromDB result: " + result);
+		LOG.info("deleteAccountFromDB result: " + result);
 	}
 
 	private Map<String, Object> createSalesforceAccount() {
