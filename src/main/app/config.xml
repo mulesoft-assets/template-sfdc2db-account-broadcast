@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
 	
-	<!-- This is the main configuration files, you should place here all the Connectors configuration an declarations -->
+	<!-- This is the main configuration files, you should place here all the Connectors configuration and declarations -->
 
     <context:property-placeholder location="common.properties, mule.${mule.env}.properties"/>
     

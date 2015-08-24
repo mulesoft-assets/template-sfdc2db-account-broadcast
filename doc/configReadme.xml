@@ -7,13 +7,13 @@
 		<section id="use_case">
 As a Salesforce admin I want to synchronize Accounts from Salesforce to database.
 
-This Template should serve as a foundation for setting an online sync of Accounts from one Salesforce instance to database. Everytime there is a new Account or a change in an already existing one, the integration will poll for changes in SalesForce source instance and it will be responsible for updating the Account on the target database table.
+This Template should serve as a foundation for setting an online sync of Accounts from one Salesforce instance to database. Every time there is a new Account or a change in an already existing one, the integration will poll for changes in Salesforce source instance and it will be responsible for updating the Account on the target database table.
 
 Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 
 As implemented, this Anypoint Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing) and [Outbound messaging](https://www.salesforce.com/us/developer/docs/api/Content/sforce_api_om_outboundmessaging.htm)
 The batch job is divided into Input, Process and On Complete stages.
-The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest SalesForce updates/creations matching a filter criteria and executing the batch job.
+The integration is triggered by a poll defined in the flow that is going to trigger the application, querying newest Salesforce updates/creations matching a filter criteria and executing the batch job.
 During the Process stage, each Salesforce Account will be filtered depending on, if it has an existing matching account in the database
 The last step of the Process stage will group the Accounts and insert/update them in database.
 Finally during the On Complete stage the Template will log output statistics data into the console.
@@ -64,6 +64,7 @@ Once this all is done every time when you will make a change on Account in sourc
 		<section id="application_configuration">
 		<![CDATA[
 **Application configuration**
++ http.port `9090`
 
 + poll.frequencyMillis `60000`
 + poll.startDelayMillis `0`
