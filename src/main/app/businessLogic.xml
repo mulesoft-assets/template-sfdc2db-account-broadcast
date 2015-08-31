@@ -47,14 +47,15 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 %output application/java
 ---
 payload map {
-	Id 					: payload.Id,
-	Name 				: payload.Name,
-	AccountNumber 		: payload.AccountNumber,
-	Description 		: payload.Description,
-	NumberOfEmployees 	: payload.NumberOfEmployees,
-	Industry 			: payload.Industry
+	Id 					: $.Id,
+	Name 				: $.Name,
+	AccountNumber 		: $.AccountNumber,
+	Description 		: $.Description,
+	NumberOfEmployees 	: $.NumberOfEmployees,
+	Industry 			: $.Industry
 }]]></dw:set-payload>
                     </dw:transform-message>
+
                     <db:update config-ref="GenericDatabaseConnector" doc:name="update account in database" bulkMode="true">
                         <db:parameterized-query><![CDATA[UPDATE Account SET
 AccountNumber = #[payload.AccountNumber], 
@@ -76,19 +77,20 @@ WHERE Name = #[payload.Name]]]></db:parameterized-query>
             <batch:step name="insertAccountInDatabaseStep" accept-expression="#[recordVars.account.size() == 0]">
 
                 <batch:commit size="200" doc:name="Batch Commit">
-                 <dw:transform-message doc:name="SFDC Account To Account">
+                <dw:transform-message doc:name="SFDC Account To Account">
                         <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 payload map {
-	Id 					: payload.Id,
-	Name 				: payload.Name,
-	AccountNumber 		: payload.AccountNumber,
-	Description 		: payload.Description,
-	NumberOfEmployees 	: payload.NumberOfEmployees,
-	Industry 			: payload.Industry
+	Id 					: $.Id,
+	Name 				: $.Name,
+	AccountNumber 		: $.AccountNumber,
+	Description 		: $.Description,
+	NumberOfEmployees 	: $.NumberOfEmployees,
+	Industry 			: $.Industry
 }]]></dw:set-payload>
-				</dw:transform-message>
+                    </dw:transform-message>
+
                     <db:insert config-ref="GenericDatabaseConnector" doc:name="insert account in database" bulkMode="true">
                         <db:parameterized-query><![CDATA[INSERT INTO Account (
 	AccountNumber,
