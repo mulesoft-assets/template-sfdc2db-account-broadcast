@@ -1,0 +1,13 @@
+##
+## Pattern Broadcast beginning
+##
+## Batch Job definition (pattern argument)
+##
+#set( $batch_name = $fragment_element_label_business_logic_broadcast_account_batch )
+#set( $lookup_entities = $fragment_container_batchstep_lookup_account_db )
+#set( $create_upsert_entities = $fragment_container_batchstep_db_create_accounts_step )
+#set( $update_entities = $fragment_container_batchstep_db_update_accounts_step )
+#set( $on_complete = $fragment_processors_processorgroup_broadcast_on_complete )
+#set( $batch_job = "#evaluate( $fragment_container_batchjob_broadcast )" )
+##
+#evaluate( $fragment_pattern_broadcast_business_logic )
