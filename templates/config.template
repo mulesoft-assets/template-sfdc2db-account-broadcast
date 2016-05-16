@@ -1,0 +1,4 @@
+## Pattern Broadcast
+#set( $src_sys_config = $fragment_container_config_sfdc_src )
+#set( $dst_sys_config = $fragment_container_config_db_dst )
+#evaluate( $fragment_pattern_broadcast_config )
