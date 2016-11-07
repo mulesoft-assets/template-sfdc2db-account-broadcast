@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule version="EE-3.7.1" 
+<mule  
 	xmlns:email="http://www.mulesoft.org/schema/mule/email" 
 	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" 
 	xmlns:http="http://www.mulesoft.org/schema/mule/http" 

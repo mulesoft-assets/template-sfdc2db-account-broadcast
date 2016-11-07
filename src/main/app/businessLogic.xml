@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule version="EE-3.7.1" 
+<mule  
 	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" 
 	xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" 
 	xmlns:json="http://www.mulesoft.org/schema/mule/json" 

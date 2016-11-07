@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule version="EE-3.7.1" 
+<mule  
 	xmlns:db="http://www.mulesoft.org/schema/mule/db"
 	xmlns:context="http://www.springframework.org/schema/context" 
 	xmlns="http://www.mulesoft.org/schema/mule/core" 
