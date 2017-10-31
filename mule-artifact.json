@@ -1,0 +1,19 @@
+{
+  "domain": "default",
+  "configs": [
+    "template-sfdc2db-account-broadcast.xml"
+  ],
+  "redeploymentEnabled": true,
+  "name": "template-sfdc2db-account-broadcast",
+  "minMuleVersion": "4.0.0-rc",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}
