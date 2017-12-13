@@ -5,7 +5,8 @@
   ],
   "redeploymentEnabled": true,
   "name": "template-sfdc2db-account-broadcast",
-  "minMuleVersion": "4.0.0-rc",
+  "minMuleVersion": "4.0.0",
+  "requiredProduct": "MULE_EE",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {

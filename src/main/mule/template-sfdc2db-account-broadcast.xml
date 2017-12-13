@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
 	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 	<salesforce:sfdc-config name="Salesforce_Sfdc_config"
 		doc:name="Salesforce Sfdc config" doc:id="38a0808d-8f32-4c87-a763-4db431b3c4cd">
 		<salesforce:basic-connection username="${sfdc.username}"
-			password="${sfdc.password}" securityToken="${sfdc.securityToken}" url="${sfdc.url}"/>
+			password="${sfdc.password}" securityToken="${sfdc.securityToken}"/>
 	</salesforce:sfdc-config>
 	
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="59194256-5c2f-49ea-8146-c46fbbf41c61" >
@@ -24,10 +25,11 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<configuration-properties file="mule-artifact.properties" doc:name="Configuration properties" doc:id="398fd02c-a527-47bb-b934-1fd10c398ee5" />
 	<configuration-properties file="common.properties"
 		doc:name="Configuration properties" doc:id="523e4eea-d00f-4213-bde7-a2764a635851" />
-	<configuration-properties file="mule.dev.properties" doc:name="Configuration properties" doc:id="7115a17b-4a67-4607-8a7c-e8f91b0737de" />
+	<configuration-properties file="mule.${mule.env}.properties" doc:name="Configuration properties" doc:id="7115a17b-4a67-4607-8a7c-e8f91b0737de" />
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4af34f10-992b-4bd7-b64e-b9fc226b9ccb" >
 		<http:listener-connection host="0.0.0.0" port="${http.port}" />
 	</http:listener-config>
+	<os:object-store name="watermarkStore" persistent="true"/>
 
 	<flow name="pushFlow" doc:id="d06d2b84-ba6d-4c74-9b26-f6443b4e0245" >
 		<http:listener config-ref="HTTP_Listener_config" path="/" doc:name="Listener" doc:id="8c55bfe5-1ace-4ff7-b08f-6937c33f7077" />
@@ -61,9 +63,8 @@ payload.Envelope.Body.notifications.Notification.*sObject]]></ee:set-payload>
 		</scheduler>
 		<choice doc:name="Trigger policy" doc:id="b0cb7e8f-6903-4ae5-9f5b-6bbfe1848095" >
 			<when expression="#['POLL' == '${trigger.policy}']" >
-				<salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Accounts from Salesforce" doc:id="ebcf71a8-3192-4437-b2cb-b23f008afae5">
-			<salesforce:salesforce-query>SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account LIMIT 10</salesforce:salesforce-query>
-		</salesforce:query>
+				<flow-ref doc:name="sfdcQueryFlow" doc:id="ada07859-8839-4751-9623-68a08d31a472" name="sfdcQueryFlow"/>
+				<logger level="INFO" doc:name="Log Accounts  to sync" doc:id="65934ef1-2939-4fab-bde9-1886331527ea" message="#['Account objects to sync: ' ++ write(payload)]" />				
 				<flow-ref name="businessLogicFlow" doc:name="businessLogicFlow" doc:id="e16bf02c-b833-47de-afd5-2329ce1fab2b" />
 			</when>
 			<otherwise >
@@ -71,6 +72,24 @@ payload.Envelope.Body.notifications.Notification.*sObject]]></ee:set-payload>
 			</otherwise>
 		</choice>
 	
+</flow>
+	<flow name="sfdcQueryFlow">
+		<os:retrieve key="watermark" objectStore="watermarkStore" target="lastQueryTimestamp" doc:name="Retrieve lastQueryTimestamp">
+        <os:default-value><![CDATA[${watermark.default.expression}]]></os:default-value>
+    </os:retrieve>
+    <salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Accounts from Salesforce">
+		<salesforce:salesforce-query>SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account WHERE LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
+		<salesforce:parameters><![CDATA[#[output applicaton/java
+---
+{
+	"lastModifiedDate" : vars.lastQueryTimestamp
+}]]]></salesforce:parameters>
+    
+</salesforce:query>
+    <os:store key="watermark" failIfPresent="false" failOnNullValue="false" objectStore="watermarkStore" doc:name="Store lastQueryTimestamp">
+        <os:value>#[max(payload map $.LastModifiedDate)]</os:value>
+    </os:store>
+
 </flow>
 	<flow name="businessLogicFlow" doc:id="8759532e-79b7-4789-990c-dc8e162bfd67" >
 		<batch:job jobName="syncAccountsBatch" doc:id="204892ae-0d97-4326-beae-310c8d52b7a6">
