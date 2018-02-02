@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	
+
+	
+	<flow name="businessLogicFlow" doc:id="8759532e-79b7-4789-990c-dc8e162bfd67" >
+		<batch:job jobName="syncAccountsBatch" doc:id="204892ae-0d97-4326-beae-310c8d52b7a6">
+			<batch:process-records>
+				<batch:step name="checkAccountInDatabaseStep" doc:id="89713774-362a-4e92-9bdc-41e31802bf38">
+					<db:select config-ref="Database_Config" doc:name="Query Account by matching name from Database" doc:id="c93a20b0-4e0d-44ec-8c0f-831d31beea8b" queryTimeoutUnit="MILLISECONDS" target="IdInDB" targetValue="#[payload[0].id]">
+						<non-repeatable-iterable />
+						<db:sql >SELECT Id FROM Account WHERE Name = :paramName</db:sql>
+						<db:input-parameters ><![CDATA[#[{'paramName' : payload.Name}]]]></db:input-parameters>
+					</db:select>
+					<ee:transform doc:name="Push Id of account from database to payload" doc:id="65dd1f67-68bf-4b3a-8fec-19cd2c2163b3" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload ++ {IdInDB: vars.IdInDB}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</batch:step>
+				<batch:step name="insertAccountToDatabaseStep" doc:id="78a74ab4-9b91-416d-985a-acda2ac377eb" acceptExpression="payload.IdInDB == null">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="1ad86a98-643e-494a-a90a-32daab0b03cc" size="${page.size}">
+						<logger level="INFO" doc:name="Log response" doc:id="1217b430-c797-4d39-a0a8-74743ffda9e7" message="#['Insert response: ' ++ write(payload, 'application/json')]" />
+						<db:bulk-insert config-ref="Database_Config" doc:name="Insert account in database" doc:id="f3626d1b-8b19-460e-83f8-1567930ecee8" >
+							<db:sql >INSERT INTO Account (
+	AccountNumber,
+	Description,
+	Name,
+	NumberOfEmployees,
+	Industry,
+	SalesforceId,
+	LastModifiedById,
+	LastModifiedDate
+) VALUES (
+	:AccountNumber,
+	:Description,
+	:Name,
+	:NumberOfEmployees,
+	:Industry,
+	:Id,
+	CURRENT_USER(),
+	CURRENT_TIMESTAMP()
+)</db:sql>
+						</db:bulk-insert>
+					
+</batch:aggregator>
+				</batch:step>
+				<batch:step name="updateAccountToDatabaseStep" doc:id="640c7d16-2443-48de-a7a0-084895350e5e" acceptExpression="payload.IdInDB != null">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="ce71424b-dcd0-4d42-a141-df297df436b7" size="${page.size}">
+						<logger level="INFO" doc:name="Log response" doc:id="8f8f706d-cb06-4fde-b1de-1412250266bd" message="#['Update response: ' ++ write(payload, 'application/json')]" />
+						<db:bulk-update config-ref="Database_Config" doc:name="Update account in database" doc:id="5efd3956-44fa-4781-983f-e88dea393a2e" >
+							<db:sql >UPDATE Account SET
+AccountNumber = :AccountNumber, 
+Description = :Description,  
+NumberOfEmployees = :NumberOfEmployees,
+Industry = :Industry,
+LastModifiedDate = CURRENT_TIMESTAMP(),
+LastModifiedById = CURRENT_USER()
+WHERE Id = :IdInDB</db:sql>
+						</db:bulk-update>
+					</batch:aggregator>
+				</batch:step>
+			
+</batch:process-records>
+			<batch:on-complete>
+				<ee:transform doc:name="Prepare migration result" doc:id="c84b4bc4-5a65-41c1-9d0c-f1ebd3d8db7a">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+"Migration Report: \n"
+ 
+++ "\n Time [milliseconds]: " 		++ payload.elapsedTimeInMillis
+++ "\n Total Records: "				++ payload.totalRecords
+++ "\n Successful Records: "		++ payload.successfulRecords
+++ "\n Failed Records: "			++ payload.failedRecords
+++ "\n Loaded Records: "			++ payload.loadedRecords
+++ "\n Processed Records: " 		++ payload.processedRecords]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+				<logger level="INFO" doc:name="Migration process has finished!" doc:id="b7575d38-7dbd-4602-9186-1bbb25234896" message="Migration process has finished!" />
+
+			</batch:on-complete>
+		
+</batch:job>
+	</flow>
+
+</mule>

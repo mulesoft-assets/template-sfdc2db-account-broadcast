@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+
+<flow name="pushFlow" doc:id="d06d2b84-ba6d-4c74-9b26-f6443b4e0245">
+		<http:listener config-ref="HTTP_Listener_config" path="/" doc:name="Listener" doc:id="8c55bfe5-1ace-4ff7-b08f-6937c33f7077" />
+		<logger level="INFO" doc:name="Log about push notification" doc:id="33c971d9-fe8d-4219-8c3a-96eb41796dea" message="Triggered pushFlow" />
+		<choice doc:name="Trigger policy" doc:id="ab49295a-6cfe-4ff6-b01e-ee10907e9442" >
+			<when expression="#['push' == '${trigger.policy}']" >
+				<ee:transform doc:name="XML to Account" doc:id="319ace93-f407-4cbc-9bb3-51d89021f6ff" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload.Envelope.Body.notifications.Notification.*sObject]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref name="businessLogicFlow" doc:name="Trigger Batch execute for Upsert in database" doc:id="a6d7734e-bc60-41cc-ad58-5ec889c92665" />
+			
+</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Log about skipped message" doc:id="93bbbb8d-2cd9-4ee0-aa20-2f6caf49970c" message="Trigger policy has been set to POLL. Skipping this message"/>
+			</otherwise>
+		</choice>
+		<set-payload value="&lt;soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:out='http://soap.sforce.com/2005/09/outbound'&gt;&lt;soapenv:Header/&gt;&lt;soapenv:Body&gt;&lt;out:notificationsResponse&gt;&lt;out:Ack&gt;true&lt;/out:Ack&gt;&lt;/out:notificationsResponse&gt;&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;" doc:name="Set Response Body" doc:id="28da47fd-44d5-41f1-b341-4d244f672a10" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="488b507d-e26c-4c56-8759-8bb4f6645d71" type="ANY">
+				<flow-ref doc:name="errorHandlingFlow" doc:id="afdaf73c-0137-4d60-84f6-5c41234771a3" name="errorHandlingFlow" />
+			</on-error-propagate>
+		</error-handler>
+</flow>
+<flow name="schedulerFlow" doc:id="aff4106d-d2f6-4366-940a-a380dcb1cf73" >
+	<scheduler doc:name="Scheduler" doc:id="58b7c776-fbee-4753-9bea-f6cc3e037efd" >
+		<scheduling-strategy >
+			<fixed-frequency frequency="${scheduler.frequency}" startDelay="${scheduler.startDelay}"/>
+		</scheduling-strategy>
+	</scheduler>
+	<choice doc:name="Trigger policy" doc:id="b0cb7e8f-6903-4ae5-9f5b-6bbfe1848095" >
+		<when expression="#['poll' == '${trigger.policy}']" >
+			<flow-ref doc:name="sfdcQueryFlow" doc:id="ada07859-8839-4751-9623-68a08d31a472" name="sfdcQueryFlow"/>				
+			<flow-ref name="businessLogicFlow" doc:name="Trigger Batch execute for Upsert in database" doc:id="e16bf02c-b833-47de-afd5-2329ce1fab2b" />
+		</when>
+		<otherwise >
+			<logger level="INFO" doc:name="Log about skipped message" doc:id="242c440a-7556-414f-a413-ecdd6a09e7f1" message="Trigger policy has been set to PUSH. Skipping this message"/>
+		</otherwise>
+	</choice>
+	<error-handler >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="488b507d-e26c-4c56-8759-8bb4f6645d71" type="ANY">
+			<flow-ref doc:name="errorHandlingFlow" doc:id="afdaf73c-0137-4d60-84f6-5c41234771a3" name="errorHandlingFlow" />
+		</on-error-propagate>
+	</error-handler>
+</flow>
+	<flow name="sfdcQueryFlow">
+		<os:retrieve key="watermark" objectStore="watermarkStore" target="lastQueryTimestamp" doc:name="Retrieve lastQueryTimestamp">
+        <os:default-value><![CDATA[${watermark.default.expression}]]></os:default-value>
+    </os:retrieve>
+    <salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Accounts from Salesforce">
+		<salesforce:salesforce-query>SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account WHERE LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
+		<salesforce:parameters><![CDATA[#[output applicaton/java
+---
+{
+	"lastModifiedDate" : vars.lastQueryTimestamp
+}]]]></salesforce:parameters>
+    
+</salesforce:query>
+    <os:store key="watermark" failIfPresent="false" failOnNullValue="false" objectStore="watermarkStore" doc:name="Store lastQueryTimestamp">
+        <os:value>#[max(payload map $.LastModifiedDate)]</os:value>
+    </os:store>
+</flow>
+
+</mule>
+
