@@ -63,7 +63,7 @@ payload.Envelope.Body.notifications.Notification.*sObject]]></ee:set-payload>
 </flow>
 	<flow name="sfdcQueryFlow">
 		<os:retrieve key="watermark" objectStore="watermarkStore" target="lastQueryTimestamp" doc:name="Retrieve lastQueryTimestamp">
-        <os:default-value><![CDATA[${watermark.default.expression}]]></os:default-value>
+        <os:default-value><![CDATA[#[${watermark.default.expression}]]]></os:default-value>
     </os:retrieve>
     <salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Accounts from Salesforce">
 		<salesforce:salesforce-query>SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account WHERE LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
@@ -74,8 +74,8 @@ payload.Envelope.Body.notifications.Notification.*sObject]]></ee:set-payload>
 }]]]></salesforce:parameters>
     
 </salesforce:query>
-    <os:store key="watermark" failIfPresent="false" failOnNullValue="false" objectStore="watermarkStore" doc:name="Store lastQueryTimestamp">
-        <os:value>#[max(payload map $.LastModifiedDate)]</os:value>
+		<os:store key="watermark" failIfPresent="false" failOnNullValue="false" objectStore="watermarkStore" doc:name="Store lastQueryTimestamp">
+        <os:value>#[max(payload map $.LastModifiedDate) as String]</os:value>
     </os:store>
 </flow>
 
