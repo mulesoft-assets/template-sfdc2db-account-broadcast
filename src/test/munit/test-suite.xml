@@ -16,11 +16,12 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<munit:config name="test-suite.xml" doc:name="MUnit configuration" />
 	<configuration-properties doc:name="Configuration properties"
-		doc:id="c382dc50-b83c-41be-ad31-42ccb929d758" file="mule.test.properties" />
-	<configuration-properties doc:name="Configuration properties"
-		doc:id="59fef852-f885-4b1e-baac-96bce830be9f" file="mule-artifact.properties" />
+		doc:id="c382dc50-b83c-41be-ad31-42ccb929d758" file="mule.${mule.env}.properties" />
 	<configuration-properties doc:name="Configuration properties"
 		doc:id="a0f29785-69a4-48b7-8ef5-410c95ee7ff2" file="common.properties" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="59fef852-f885-4b1e-baac-96bce830be9f" file="mule-artifact.properties" />
+
 	<munit:before-test name="test-suiteBefore_Test"
 		description="Before tests actions" doc:id="7f8facb1-95ae-4456-9448-faf3a3a89dc9">
 		<ee:transform doc:name="Prepare testing data for SFDC"
