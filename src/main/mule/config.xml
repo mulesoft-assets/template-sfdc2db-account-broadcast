@@ -1,37 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:os="http://www.mulesoft.org/schema/mule/os"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
-http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+<?xml version='1.0' encoding='utf-8'?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 
 	
-	<salesforce:sfdc-config name="Salesforce_Sfdc_config"
-		doc:name="Salesforce Sfdc config" doc:id="38a0808d-8f32-4c87-a763-4db431b3c4cd">
-		<salesforce:basic-connection username="${sfdc.username}"
-			password="${sfdc.password}" securityToken="${sfdc.securityToken}"/>
+	<salesforce:sfdc-config name="Salesforce_Sfdc_config" doc:id="38a0808d-8f32-4c87-a763-4db431b3c4cd" doc:name="Salesforce Sfdc config">
+		<salesforce:basic-connection password="${sfdc.password}" securityToken="${sfdc.securityToken}" username="${sfdc.username}" />
 	</salesforce:sfdc-config>
 	
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="59194256-5c2f-49ea-8146-c46fbbf41c61" >
-		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.name}" />
+	<db:config name="Database_Config" doc:id="59194256-5c2f-49ea-8146-c46fbbf41c61" doc:name="Database Config">
+		<db:my-sql-connection database="${db.name}" host="${db.host}" password="${db.password}" port="${db.port}" user="${db.user}" />
 	</db:config>
 	
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4af34f10-992b-4bd7-b64e-b9fc226b9ccb" >
+	<http:listener-config name="HTTP_Listener_config" doc:id="4af34f10-992b-4bd7-b64e-b9fc226b9ccb" doc:name="HTTP Listener config">
 		<http:listener-connection host="0.0.0.0" port="${http.port}" />
 	</http:listener-config>
-	<os:object-store name="watermarkStore" persistent="false"/>
+	<os:object-store name="watermarkStore" persistent="false" />
 
-	<configuration-properties doc:name="Configuration properties" doc:id="7584fb1d-2fa2-445a-b949-eed01f5785bd" file="common.properties" />
-	<configuration-properties doc:name="Configuration properties" doc:id="86e0eb9d-cf2e-451a-9e09-b4afdf13e0e9" file="mule.${mule.env}.properties" />
-	<configuration-properties doc:name="Configuration properties" doc:id="0abdf143-d5d1-4168-bdbd-7e3722442725" file="mule-artifact.properties" />
+	<configuration-properties file="common.properties" doc:id="7584fb1d-2fa2-445a-b949-eed01f5785bd" doc:name="Configuration properties" />
+	<configuration-properties file="mule.${mule.env}.properties" doc:id="86e0eb9d-cf2e-451a-9e09-b4afdf13e0e9" doc:name="Configuration properties" />
+	<configuration-properties file="mule-artifact.properties" doc:id="0abdf143-d5d1-4168-bdbd-7e3722442725" doc:name="Configuration properties" />
 	
-</mule>
+<global-property doc:name="Global Property" name="mule.env" value="dev" /></mule>
