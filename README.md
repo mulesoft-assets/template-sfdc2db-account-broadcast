@@ -18,7 +18,7 @@ Requirements have been set not only to be used as examples, but also to establis
 As implemented, this template leverages the Mule batch module and [Outbound messaging](https://www.salesforce.com/us/developer/docs/api/Content/sforce_api_om_outboundmessaging.htm)
 The batch job is divided into Process and On Complete stages.
 The integration is triggered by a scheduler defined in the flow that is going to trigger the application, querying newest Salesforce updates/creations matching a filter criteria and executing the batch job.
-During the Process stage, each Salesforce Account is filtered depending on, if it has an existing matching account in the database
+During the Process stage, each Salesforce Account is filtered depending on if it has an existing matching account in the database
 The last step of the Process stage groups the Accounts and inserts or updates them in database.
 Finally during the On Complete stage the Template logs output statistics data into the console.
 
@@ -227,9 +227,9 @@ This file provides the configuration for connectors and configuration properties
 <!-- Default Business Logic XML (start) -->
 Functional aspect of the template is implemented on this XML, directed by a batch job that will be responsible for creations/updates. The several message processors constitute four high level actions that fully implement the logic of this template:
 
-1. During the Input stage the Template will query Salesforce for all the existing Accounts that match the filtering criteria.
-2. During the Process stage, each Salesforce Account will be checked by name against the Database, if it has an existing matching objects in database.
-3. The choice routing element will then decide whether to perform update operation on selected database columns or to perform insert operation
+1. During the Input stage the Template queries Salesforce for all the existing Accounts that match the filtering criteria.
+2. During the Process stage, each Salesforce Account is checked by name against the Database, if it has an existing matching objects in database.
+3. The choice routing element decides whether to perform update operation on selected database columns or to perform insert operation
 4. Finally during the On Complete stage the Template logs output statistics data into the console.<!-- Default Business Logic XML (end) -->
 
 <!-- Business Logic XML (start) -->
