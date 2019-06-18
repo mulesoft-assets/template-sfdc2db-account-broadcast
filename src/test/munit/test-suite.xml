@@ -114,15 +114,15 @@ $.Name == vars.accounts[1].Name)]]></ee:set-payload>
 			<db:sql >SELECT Id FROM Account WHERE Name = :paramName</db:sql>
 			<db:input-parameters ><![CDATA[#[{'paramName' : vars.accounts[0].Name}]]]></db:input-parameters>
 		</db:select>
-		<munit-tools:assert-that doc:name="Assert that we found created Account" doc:id="a8f4453a-10c6-4508-8ecf-64cc08e6129c" expression="#[sizeOf(payload)]" is="#[MunitTools::equalTo(1)]" />
+		<munit-tools:assert-that doc:name="Assert that we found created Account" doc:id="a8f4453a-10c6-4508-8ecf-64cc08e6129c" expression="#[sizeOf(payload)]" is="#[MunitTools::equalTo(1)]" message="Assert that we found created Account"/>
 	</sub-flow>
 	<sub-flow name="updateTest" doc:id="eb2c1733-e157-4563-9321-829a688c161f" >
 		<db:select doc:name="Select updated account in DB" doc:id="e4ccb6e6-111f-4f0f-ae36-c9e821064038" config-ref="Database_Config">
 			<db:sql >SELECT Id, Industry, NumberOfEmployees FROM Account WHERE Name = :name</db:sql>
 			<db:input-parameters ><![CDATA[#[{'name' : vars.accounts[1].Name}]]]></db:input-parameters>
 		</db:select>
-		<munit-tools:assert-that doc:name="Assert that Industry was updated" doc:id="5be8506d-fc9c-489d-90dc-fa140acb956f" expression="#[payload[0].Industry]" is='#[MunitTools::equalTo(vars.accounts[1].Industry)]' />
-		<munit-tools:assert-that doc:name="Assert that Number of employees was updated" doc:id="798bd6c1-88b2-4cc9-916d-ed7cb4adc0c8" expression="#[payload[0].NumberOfEmployees as Number]" is='#[MunitTools::equalTo(vars.accounts[1].NumberOfEmployees)]' />
+		<munit-tools:assert-that doc:name="Assert that Industry was updated" doc:id="5be8506d-fc9c-489d-90dc-fa140acb956f" expression="#[payload[0].Industry]" is='#[MunitTools::equalTo(vars.accounts[1].Industry)]' message="Assert that Industry was updated has failed"/>
+		<munit-tools:assert-that doc:name="Assert that Number of employees was updated" doc:id="798bd6c1-88b2-4cc9-916d-ed7cb4adc0c8" expression="#[payload[0].NumberOfEmployees as Number]" is='#[MunitTools::equalTo(vars.accounts[1].NumberOfEmployees)]' message="Assert that Number of employees was updated has failed"/>
 	</sub-flow>
 	<munit:after-test name="test-suiteAfter_Test" description="After tests actions" doc:id="5b85bb9e-67e6-47f7-8f71-53a39f147fc8" >
 		<db:delete doc:name="Delete source Accounts in DB" doc:id="feb98cde-bbf5-46c6-a400-c82962bd524c" config-ref="Database_Config">
