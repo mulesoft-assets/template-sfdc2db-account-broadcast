@@ -63,19 +63,20 @@ payload.Envelope.Body.notifications.Notification.*sObject]]></ee:set-payload>
 </flow>
 	<flow name="sfdcQueryFlow">
 		<os:retrieve key="watermark" objectStore="watermarkStore" target="lastQueryTimestamp" doc:name="Retrieve lastQueryTimestamp">
-        <os:default-value><![CDATA[#[${watermark.default.expression}]]]></os:default-value>
+			<os:default-value ><![CDATA[#[p('watermark.default.expression')]]]></os:default-value>
     </os:retrieve>
     <salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Accounts from Salesforce">
 		<salesforce:salesforce-query>SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account WHERE LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
-		<salesforce:parameters><![CDATA[#[output applicaton/java
+		<salesforce:parameters><![CDATA[#[output application/java
 ---
 {
 	"lastModifiedDate" : vars.lastQueryTimestamp
 }]]]></salesforce:parameters>
     
 </salesforce:query>
-		<os:store key="watermark" failIfPresent="false" failOnNullValue="false" objectStore="watermarkStore" doc:name="Store lastQueryTimestamp">
-        <os:value>#[max(payload map $.LastModifiedDate) as String]</os:value>
+		<set-variable value="#[max(payload map $.LastModifiedDate)]" doc:name="Set maxLastModifiedDate Variable" doc:id="c7e6b4fc-cd61-482e-8b73-4dfb76bb199a" variableName="maxLastModifiedDate"/>
+		<os:store key="watermark" failOnNullValue="false" objectStore="watermarkStore" doc:name="Store lastQueryTimestamp">
+			<os:value ><![CDATA[#[vars.maxLastModifiedDate]]]></os:value>
     </os:store>
 </flow>
 
