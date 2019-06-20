@@ -63,7 +63,7 @@ payload.Envelope.Body.notifications.Notification.*sObject]]></ee:set-payload>
 </flow>
 	<flow name="sfdcQueryFlow">
 		<os:retrieve key="watermark" objectStore="watermarkStore" target="lastQueryTimestamp" doc:name="Retrieve lastQueryTimestamp">
-			<os:default-value ><![CDATA[#[p('watermark.default.expression')]]]></os:default-value>
+			<os:default-value ><![CDATA[#[read(p('watermark.default.expression'))]]]></os:default-value>
     </os:retrieve>
     <salesforce:query config-ref="Salesforce_Sfdc_config" doc:name="Query Accounts from Salesforce">
 		<salesforce:salesforce-query>SELECT Id, AccountNumber, Description, Industry, LastModifiedDate, Name, NumberOfEmployees, ParentId FROM Account WHERE LastModifiedDate &gt; :lastModifiedDate</salesforce:salesforce-query>
